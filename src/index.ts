@@ -1,7 +1,11 @@
-import { createDiscordInterface, connect } from "./interfaces/discord/discord";
+import * as DiscordInterface from "./interfaces/discord/discord";
+import { DiscordInMemoryStorage } from "./interfaces/discord/storage/discord_in_memory";
 
-let d = createDiscordInterface({
-  token: process.env.DISCORD_TOKEN || ""
-});
-
-connect(d);
+try {
+  new DiscordInterface.DiscordInterface({
+    token: process.env.DISCORD_TOKEN || "",
+    storage: new DiscordInMemoryStorage()
+  }).connect();
+} catch (e) {
+  console.error(e.toString());
+}

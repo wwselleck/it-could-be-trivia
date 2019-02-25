@@ -5,9 +5,13 @@ declare module "@it-could-be/trivia-questions" {
   // https://stackoverflow.com/questions/50564756/exporting-enum-from-typescript-type-definition-file
   // It should probably just be exported from the actual package
   export const enum QuestionType {
-    MULTIPLE_ANSWER = "multiple_answer"
+    MULTIPLE_ANSWER = "multiple_answer",
+    SINGLE_ANSWER = "single_answer",
+    MULTIPLE_CHOICE = "multiple_choice"
   }
+
   export interface BaseQuestion {
+    id: string;
     question_type_id: string;
     category_id: string;
     detail: Object;

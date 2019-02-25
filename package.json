@@ -5,15 +5,18 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "start": "node dist/index.js",
     "lint": "prettier \"src/**/*\"",
-    "run": "node dist/index.ts",
     "watch": "./bin/tools.sh watch",
     "watch:source": "./bin/tools.sh watch-source",
     "watch:server": "./bin/tools.sh watch-server",
     "ping": "curl -X GET localhost:3000"
   },
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "dependencies": {
-    "@it-could-be/trivia-questions": "0.0.1",
+    "@it-could-be/trivia-questions": "0.0.3",
     "discord.js": "^11.4.2",
     "express": "^4.16.4"
   },

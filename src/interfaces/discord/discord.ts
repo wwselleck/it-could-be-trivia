@@ -1,24 +1,64 @@
 import * as Discord from "../../lib/discord";
-import { createTriviaCommand } from "./commands/trivia";
+import { DiscordStorage } from "./storage/discord_storage";
+import * as DiscordMessageHandler from "./discord_message_handler";
+import * as DiscordActions from "./actions/actions";
+import { triviaHandler } from "./handlers/trivia";
 
-export interface DiscordInterface {
-  _client: Discord.DiscordClient;
-}
+export type MessageContext = {
+  message: {
+    content: string;
+  };
+};
 
-export interface DiscordInterfaceConfig {
-  token: string;
-}
-
-export function createDiscordInterface(
-  config: DiscordInterfaceConfig
-): DiscordInterface {
-  let client = Discord.createClient(config.token);
-  Discord.registerCommand(client, createTriviaCommand());
+function clientMessageToMessageContext(message: Discord.Message) {
   return {
-    _client: client
+    message: {
+      content: message.content
+    }
   };
 }
 
-export function connect(di: DiscordInterface) {
-  Discord.connect(di._client);
+const withMessageContext = (fn: (ctx: MessageContext) => void) => (
+  message: Discord.Message
+) => fn(clientMessageToMessageContext(message));
+
+export interface DiscordInterfaceConfig {
+  token: string;
+  storage: DiscordStorage;
+}
+
+export class DiscordInterface {
+  private config: DiscordInterfaceConfig;
+  private client: Discord.DiscordClient;
+  private actionHandler: DiscordActions.DiscordActionHandler;
+
+  constructor(config: DiscordInterfaceConfig) {
+    this.config = config;
+    this.client = new Discord.DiscordClient(this.config.token);
+    this.actionHandler = new DiscordActions.DiscordActionHandler();
+  }
+
+  connect() {
+    let { token } = this.config;
+    this.client.connect({
+      onMessage: [this.createMessageHandler()]
+    });
+  }
+
+  private createMessageHandler() {
+    let messageHandler = DiscordMessageHandler.create({
+      command_prelude: "!",
+      commands: [
+        {
+          name: "trivia",
+          handler: triviaHandler()
+        }
+      ]
+    });
+
+    return (message: Discord.Message) => {
+      let result = messageHandler(clientMessageToMessageContext(message));
+      this.actionHandler.handle(result);
+    };
+  }
 }
