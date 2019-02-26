@@ -4,6 +4,16 @@ import * as DiscordMessageHandler from "./discord_message_handler";
 import * as DiscordActions from "./actions/actions";
 import { triviaHandler } from "./handlers/trivia";
 
+let defaultMessageHandler = DiscordMessageHandler.create({
+  commandPrelude: "!",
+  commands: [
+    {
+      name: "trivia",
+      handler: triviaHandler()
+    }
+  ]
+});
+
 export type MessageContext = {
   message: {
     content: string;
@@ -18,7 +28,7 @@ function clientMessageToMessageContext(message: Discord.Message) {
   };
 }
 
-const withMessageContext = (fn: (ctx: MessageContext) => void) => (
+const withMessageContext = (fn: DiscordMessageHandler.MessageHandler) => (
   message: Discord.Message
 ) => fn(clientMessageToMessageContext(message));
 
@@ -35,7 +45,7 @@ export class DiscordInterface {
   constructor(config: DiscordInterfaceConfig) {
     this.config = config;
     this.client = new Discord.DiscordClient(this.config.token);
-    this.actionHandler = new DiscordActions.DiscordActionHandler();
+    this.actionHandler = new DiscordActions.DiscordActionHandler(this.client);
   }
 
   connect() {
@@ -46,19 +56,10 @@ export class DiscordInterface {
   }
 
   private createMessageHandler() {
-    let messageHandler = DiscordMessageHandler.create({
-      command_prelude: "!",
-      commands: [
-        {
-          name: "trivia",
-          handler: triviaHandler()
-        }
-      ]
-    });
-
+    let handler = withMessageContext(defaultMessageHandler);
     return (message: Discord.Message) => {
-      let result = messageHandler(clientMessageToMessageContext(message));
-      this.actionHandler.handle(result);
+      let result = handler(message);
+      this.actionHandler.handle(message, result);
     };
   }
 }
