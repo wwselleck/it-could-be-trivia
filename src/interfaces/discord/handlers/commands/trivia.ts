@@ -8,9 +8,6 @@ const { QuestionType, getRandomQuestion } = TriviaQuestions;
 const withUpdateActiveQuestion = fn => (question: TriviaQuestions.Question) => (
   ctx: DiscordInterface.MessageContext
 ) => {
-  console.log(fn);
-  console.log(question);
-  console.log(ctx);
   return [
     {
       kind: "updateActiveQuestion",

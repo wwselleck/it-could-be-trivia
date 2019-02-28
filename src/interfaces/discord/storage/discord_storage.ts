@@ -1,3 +1,5 @@
+import { Maybe } from "../../../lib/types";
+
 export interface DiscordStorage {
   setActiveQuestion(
     serverId: string,
@@ -5,5 +7,5 @@ export interface DiscordStorage {
     questionId: string
   ): void;
 
-  getActiveQuestion(serverId: string, channelId: string): string | null;
+  getActiveQuestion(serverId: string, channelId: string): Maybe<string>;
 }

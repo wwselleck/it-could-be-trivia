@@ -1,101 +1,139 @@
-class ChannelSchema {
+import { Maybe, None } from "../../../lib/types";
+
+type ChannelSchema = {
   id: string;
   activeQuestionId: string | null;
+};
 
-  constructor(id: string) {
-    this.id = id;
-    this.activeQuestionId = null;
-  }
-
-  setActiveQuestion(questionId: string) {
-    this.activeQuestionId = questionId;
-  }
-
-  getActiveQuestion() {
-    return this.activeQuestionId;
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      activeQuestionId: this.activeQuestionId
-    };
-  }
-}
-
-export class ServerSchema {
+type ServerSchema = {
   id: string;
   channels: { [key: string]: ChannelSchema };
+};
 
-  constructor(id: string) {
-    this.id = id;
-    this.channels = {};
-  }
-
-  channel(channelId: string): ChannelSchema {
-    let channel = this.channels[channelId];
-    if (!channel) {
-      let newChannel = new ChannelSchema(channelId);
-      this.channels[channelId] = newChannel;
-      channel = newChannel;
-    }
-    return channel;
-  }
-
-  toJSON() {
-    return {
-      id: this.id,
-      channels: this.channels
-    };
-  }
-}
-
-export class Schema {
+type Schema = {
   servers: { [key: string]: ServerSchema };
-  constructor() {
-    this.servers = {};
-  }
+};
 
-  server(serverId: string): ServerSchema {
-    let server = this.servers[serverId];
-    if (!server) {
-      let newServer = new ServerSchema(serverId);
-      this.servers[serverId] = newServer;
-      server = newServer;
+/**
+ * REFACTOR THESE TO TAKE FUNCTION THAT TAKE THE CURRENT OBJECT
+ * AND RETURN A NEW ONE
+ * THATS SO MUCH BETTER
+ * DO THIS NEXT
+ */
+const updateChannel = (
+  schema: Schema,
+  serverId: string,
+  channelId: string,
+  update: Partial<ChannelSchema>
+): Schema => {
+  let server = schema.servers[serverId];
+  let channel = schema.servers[serverId].channels[channelId];
+  let newChannels = {
+    ...server.channels,
+    [channelId]: {
+      ...channel,
+      ...update
     }
-    return server;
+  };
+  return updateServer(schema, serverId, { channels: newChannels });
+};
+
+const updateServer = (
+  data: Schema,
+  serverId: string,
+  update: Partial<ServerSchema>
+) => {
+  let server = data.servers[serverId];
+  return {
+    ...data,
+    servers: {
+      ...data.servers,
+      [serverId]: {
+        ...server,
+        ...update
+      }
+    }
+  };
+};
+
+const ensureServer = (data: Schema, serverId: string): Schema => {
+  if (data.servers[serverId]) {
+    return data;
+  }
+  let newServers = {
+    ...data.servers,
+    [serverId]: {
+      id: serverId,
+      channels: {}
+    }
+  };
+  return {
+    ...data,
+    servers: newServers
+  };
+};
+
+const ensureChannel = (
+  data: Schema,
+  serverId: string,
+  channelId: string
+): Schema => {
+  let server = data.servers[serverId];
+  if (server.channels[channelId]) {
+    return data;
+  }
+  return {
+    ...data,
+    servers: {
+      ...data.servers,
+      [serverId]: {
+        ...server,
+        channels: {
+          ...server.channels,
+          [channelId]: {
+            id: channelId,
+            activeQuestionId: null
+          }
+        }
+      }
+    }
+  };
+};
+
+const getChannel = (data: Schema, serverId: string, channelId: string) => {
+  let server = data.servers[serverId];
+  if (!server) {
+    return None;
   }
 
-  toJSON() {
-    return {
-      servers: this.servers
-    };
-  }
-}
+  let channel = server.channels[channelId];
+  return channel || None;
+};
 
 export class DiscordInMemoryStorage {
   data: Schema;
   constructor() {
-    this.data = new Schema();
+    this.data = {
+      servers: {}
+    };
   }
 
   setActiveQuestion(serverId: string, channelId: string, questionId: string) {
-    let server = this.data.server(serverId);
-    let channel = server.channel(channelId);
-    channel.setActiveQuestion(questionId);
-    console.log(questionId);
+    let data = this.data;
+    data = ensureServer(data, serverId);
+    data = ensureChannel(data, serverId, channelId);
+    data = updateChannel(data, serverId, channelId, {
+      activeQuestionId: questionId
+    });
+    this.data = data;
     console.log(JSON.stringify(this.data, null, 2));
   }
 
-  getActiveQuestion(serverId: string, channelId: string): string | null {
-    let server = this.data.server(serverId);
-    console.log(server);
-    let channel = server.channel(channelId);
-    console.log(channel);
-    return channel.getActiveQuestion();
-  }
-
-  toJSON() {
-    return this.data.toJSON();
+  getActiveQuestion(serverId: string, channelId: string): Maybe<string> {
+    let channel = getChannel(this.data, serverId, channelId);
+    if (channel === None) {
+      return None;
+    }
+    return channel.activeQuestionId || None;
   }
 }

@@ -2,7 +2,7 @@ import * as Discord from "../../lib/discord";
 import { DiscordStorage } from "./storage/discord_storage";
 import * as DiscordMessageHandler from "./discord_message_handler";
 import * as DiscordActions from "./actions/actions";
-import { triviaHandler } from "./handlers/trivia";
+import { triviaHandler } from "./handlers/commands/trivia";
 
 let defaultMessageHandler = DiscordMessageHandler.create({
   commandPrelude: "!",
@@ -17,6 +17,9 @@ let defaultMessageHandler = DiscordMessageHandler.create({
 export type MessageContext = {
   message: {
     content: string;
+  };
+  activeQuestion?: {
+    id: string;
   };
 };
 
@@ -45,7 +48,10 @@ export class DiscordInterface {
   constructor(config: DiscordInterfaceConfig) {
     this.config = config;
     this.client = new Discord.DiscordClient(this.config.token);
-    this.actionHandler = new DiscordActions.DiscordActionHandler(this.client);
+    this.actionHandler = new DiscordActions.DiscordActionHandler(
+      this.client,
+      config.storage
+    );
   }
 
   connect() {
