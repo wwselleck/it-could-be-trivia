@@ -1,9 +1,10 @@
 import * as DiscordInterface from "./discord";
 import * as DiscordActions from "./actions/actions";
+import * as DiscordMessageContext from "./discord_message_context";
 import { commandHandler } from "./discord_command_handler";
 
 export type MessageHandler = (
-  ctx: DiscordInterface.MessageContext
+  ctx: DiscordMessageContext.MessageContext
 ) => Array<DiscordActions.Action>;
 
 export interface DiscordCommand {
@@ -22,7 +23,7 @@ interface DiscordMessageHandlerConfig {
 }
 
 export const create = (config: DiscordMessageHandlerConfig) => (
-  context: DiscordInterface.MessageContext
+  context: DiscordMessageContext.MessageContext
 ) => {
   let { commandPrelude, commands } = config;
 
@@ -35,4 +36,18 @@ export const create = (config: DiscordMessageHandlerConfig) => (
     },
     []
   );
+};
+
+export const withLog = (logger: logger.Logger) => (fn: MessageHandler) => (
+  ctx: DiscordMessageContext.MessageContext
+) => {
+  let result = fn(ctx);
+  logger.debug(
+    {
+      ctx,
+      result
+    },
+    "Handling message"
+  );
+  return result;
 };

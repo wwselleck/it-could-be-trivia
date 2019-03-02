@@ -21,7 +21,7 @@ watch_server() {
 }
 
 watch() {
-    "${NODE_MODULES_BIN}/concurrently" -k -p "[{name}]" -n "TypeScript,Node" -c "cyan.bold,green.bold" "npm:watch:source" "npm:watch:server"
+    "${NODE_MODULES_BIN}/concurrently" -k -p "[{name}]" -n "TypeScript,Node" -c "cyan.bold,green.bold" "npm:watch:source" "npm:watch:server | pino-pretty -c -t"
 }
 
 case $1 in

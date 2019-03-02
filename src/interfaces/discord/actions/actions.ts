@@ -1,7 +1,7 @@
 import * as DiscordClient from "../../../lib/discord";
 import * as DiscordStorage from "../storage/discord_storage";
 
-export enum ActionTypes {
+export enum ActionType {
   UpdateActiveQuestion = "updateActiveQuestion",
   Reply = "reply"
 }
@@ -13,7 +13,7 @@ type HandlerConfig = {
 };
 
 type UpdateActiveQuestion = {
-  kind: "updateActiveQuestion";
+  kind: ActionType.UpdateActiveQuestion;
   payload: {
     questionId: string;
   };
@@ -21,7 +21,6 @@ type UpdateActiveQuestion = {
 const handleUpdateActiveQuestion = ({ message, storage }: HandlerConfig) => (
   action: UpdateActiveQuestion
 ) => {
-  console.log(`Handling update active question ${action}`);
   storage.setActiveQuestion(
     message.guild.id,
     message.channel.id,
@@ -30,14 +29,13 @@ const handleUpdateActiveQuestion = ({ message, storage }: HandlerConfig) => (
 };
 
 type Reply = {
-  kind: ActionTypes.Reply;
+  kind: ActionType.Reply;
   payload: {
     content: string;
   };
 };
 
 const handleReply = ({ message }: HandlerConfig) => (action: Reply) => {
-  console.log(`Handling reply ${action}`);
   message.channel.send(action.payload.content);
 };
 
@@ -64,12 +62,11 @@ export class DiscordActionHandler {
       storage: this.storage
     };
     actions.forEach(action => {
-      console.log(action);
       switch (action.kind) {
-        case ActionTypes.Reply:
+        case ActionType.Reply:
           handleReply(handlerConfig)(action);
           break;
-        case ActionTypes.UpdateActiveQuestion:
+        case ActionType.UpdateActiveQuestion:
           handleUpdateActiveQuestion(handlerConfig)(action);
           break;
       }

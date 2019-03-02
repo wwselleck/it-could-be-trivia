@@ -126,7 +126,6 @@ export class DiscordInMemoryStorage {
       activeQuestionId: questionId
     });
     this.data = data;
-    console.log(JSON.stringify(this.data, null, 2));
   }
 
   getActiveQuestion(serverId: string, channelId: string): Maybe<string> {

@@ -1,12 +1,13 @@
 import TriviaQuestions = require("@it-could-be/trivia-questions");
 
-import * as DiscordInterface from "../discord";
-import * as DiscordActions from "../actions/actions";
+import * as DiscordInterface from "../../discord";
+import * as DiscordActions from "../../actions/actions";
+import * as DiscordMessageContext from "../../discord_message_context";
 
 const { QuestionType, getRandomQuestion } = TriviaQuestions;
 
 const withUpdateActiveQuestion = fn => (question: TriviaQuestions.Question) => (
-  ctx: DiscordInterface.MessageContext
+  ctx: DiscordMessageContext.MessageContext
 ) => {
   return [
     {
@@ -21,7 +22,7 @@ const withUpdateActiveQuestion = fn => (question: TriviaQuestions.Question) => (
 
 const handleMultipleAnswerQuestion = withUpdateActiveQuestion(
   (question: TriviaQuestions.MultipleAnswerQuestion) => (
-    ctx: DiscordInterface.MessageContext
+    ctx: DiscordMessageContext.MessageContext
   ) => {
     return [
       {
@@ -36,7 +37,7 @@ const handleMultipleAnswerQuestion = withUpdateActiveQuestion(
 
 const handleSingleAnswerQuestion = withUpdateActiveQuestion(
   (question: TriviaQuestions.SingleAnswerQuestion) => (
-    ctx: DiscordInterface.MessageContext
+    ctx: DiscordMessageContext.MessageContext
   ) => {
     return [
       {
@@ -51,7 +52,7 @@ const handleSingleAnswerQuestion = withUpdateActiveQuestion(
 
 const handleMultipleChoiceQuestion = withUpdateActiveQuestion(
   (question: TriviaQuestions.MultipleChoiceQuestion) => (
-    ctx: DiscordInterface.MessageContext
+    ctx: DiscordMessageContext.MessageContext
   ) => {
     return [
       {
@@ -64,7 +65,9 @@ const handleMultipleChoiceQuestion = withUpdateActiveQuestion(
   }
 );
 
-export const triviaHandler = () => (ctx: DiscordInterface.MessageContext) => {
+export const triviaHandler = () => (
+  ctx: DiscordMessageContext.MessageContext
+) => {
   let randomQuestion = getRandomQuestion();
   switch (randomQuestion.question_type_id) {
     case QuestionType.MULTIPLE_ANSWER:
