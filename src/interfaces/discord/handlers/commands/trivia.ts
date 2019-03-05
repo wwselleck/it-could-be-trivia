@@ -20,6 +20,22 @@ const withUpdateActiveQuestion = fn => (question: TriviaQuestions.Question) => (
   ];
 };
 
+export const withQuestionLimit = fn => (
+  ctx: DiscordMessageContext.MessageContext
+) => {
+  if (ctx.activeQuestion && ctx.activeQuestion.id) {
+    return [
+      {
+        kind: DiscordActions.ActionType.Reply,
+        payload: {
+          content: "A question is already active"
+        }
+      }
+    ];
+  }
+  return fn(ctx);
+};
+
 const handleMultipleAnswerQuestion = withUpdateActiveQuestion(
   (question: TriviaQuestions.MultipleAnswerQuestion) => (
     ctx: DiscordMessageContext.MessageContext
@@ -65,20 +81,20 @@ const handleMultipleChoiceQuestion = withUpdateActiveQuestion(
   }
 );
 
-export const triviaHandler = () => (
-  ctx: DiscordMessageContext.MessageContext
-) => {
-  let randomQuestion = getRandomQuestion();
-  switch (randomQuestion.question_type_id) {
-    case QuestionType.MULTIPLE_ANSWER:
-      return handleMultipleAnswerQuestion(randomQuestion)(ctx);
-      break;
-    case QuestionType.SINGLE_ANSWER:
-      return handleSingleAnswerQuestion(randomQuestion)(ctx);
-      break;
-    case QuestionType.MULTIPLE_CHOICE:
-      return handleMultipleChoiceQuestion(randomQuestion)(ctx);
-      break;
+export const triviaHandler = withQuestionLimit(
+  (ctx: DiscordMessageContext.MessageContext) => {
+    let randomQuestion = getRandomQuestion();
+    switch (randomQuestion.question_type_id) {
+      case QuestionType.MULTIPLE_ANSWER:
+        return handleMultipleAnswerQuestion(randomQuestion)(ctx);
+        break;
+      case QuestionType.SINGLE_ANSWER:
+        return handleSingleAnswerQuestion(randomQuestion)(ctx);
+        break;
+      case QuestionType.MULTIPLE_CHOICE:
+        return handleMultipleChoiceQuestion(randomQuestion)(ctx);
+        break;
+    }
+    return [];
   }
-  return [];
-};
+);

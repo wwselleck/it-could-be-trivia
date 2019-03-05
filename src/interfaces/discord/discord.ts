@@ -13,7 +13,7 @@ let defaultMessageHandler = DiscordMessageHandler.create({
   commands: [
     {
       name: "trivia",
-      handler: triviaHandler()
+      handler: triviaHandler
     },
     {
       name: "debug",
