@@ -1,10 +1,12 @@
 import { ActionType, Action } from "../../actions/actions";
 import * as DiscordInterface from "../../discord";
+import * as DiscordMessageContext from "../../discord_message_context";
+import * as DiscordMessageHandler from "../../discord_message_handler";
 
 // Removing the return type annotation here causes TS compiler
 // errors. Maybe look into exactly why at some point?
 function handleDebugActiveQuestion(
-  ctx: DiscordInterface.MessageContext
+  ctx: DiscordMessageContext.MessageContext
 ): Array<Action> {
   return [
     {
@@ -18,12 +20,31 @@ function handleDebugActiveQuestion(
   ];
 }
 
-export const debugHandler = () => (ctx: DiscordInterface.MessageContext) => {
+function handleDebugCancelActiveQuestion(
+  ctx: DiscordMessageContext.MessageContext
+): Array<Action> {
+  return [
+    {
+      kind: ActionType.UpdateActiveQuestion,
+      payload: {
+        questionId: null
+      }
+    }
+  ];
+}
+
+const DebugCommands: Record<string, DiscordMessageHandler.MessageHandler> = {
+  activeQuestion: handleDebugActiveQuestion,
+  cancelActiveQuestion: handleDebugCancelActiveQuestion
+};
+
+export const debugHandler = () => (
+  ctx: DiscordMessageContext.MessageContext
+) => {
   let action = ctx.message.content.split(" ")[1];
-  switch (action) {
-    case "activeQuestion":
-      return handleDebugActiveQuestion(ctx);
-      break;
+  let handler = DebugCommands[action];
+  if (!handler) {
+    return [];
   }
-  return [];
+  return handler(ctx);
 };

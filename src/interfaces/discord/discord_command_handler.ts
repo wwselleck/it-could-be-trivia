@@ -1,9 +1,10 @@
 import * as DiscordInterface from "./discord";
 import * as DiscordMessageHandler from "./discord_message_handler";
+import * as DiscordMessageContext from "./discord_message_context";
 import { Maybe, None } from "../../lib/types";
 
 const extractCommandName = (prelude: string) => (
-  ctx: DiscordInterface.MessageContext
+  ctx: DiscordMessageContext.MessageContext
 ): Maybe<string> => {
   let splitContent = ctx.message.content.split(" ");
   if (splitContent.length === 0) {
@@ -19,7 +20,7 @@ const extractCommandName = (prelude: string) => (
 export const commandHandler = (
   command_prelude: string,
   commands: Array<DiscordMessageHandler.DiscordCommand>
-) => (ctx: DiscordInterface.MessageContext) => {
+) => (ctx: DiscordMessageContext.MessageContext) => {
   let commandName = extractCommandName(command_prelude)(ctx);
   if (commandName === None) {
     // Message was not a command

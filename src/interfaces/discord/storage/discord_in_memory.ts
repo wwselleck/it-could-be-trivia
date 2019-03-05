@@ -118,7 +118,11 @@ export class DiscordInMemoryStorage {
     };
   }
 
-  setActiveQuestion(serverId: string, channelId: string, questionId: string) {
+  setActiveQuestion(
+    serverId: string,
+    channelId: string,
+    questionId: string | null
+  ) {
     let data = this.data;
     data = ensureServer(data, serverId);
     data = ensureChannel(data, serverId, channelId);
@@ -126,6 +130,16 @@ export class DiscordInMemoryStorage {
       activeQuestionId: questionId
     });
     this.data = data;
+  }
+
+  cancelActiveQuestion(serverId: string, channelId: string) {
+    let activeQuestion = this.getActiveQuestion(serverId, channelId);
+    //TODO Do some error type thing if attempt to cancel without an active question
+    //If there's already an active question, the handler should've replied appropriately
+    if (activeQuestion === None) {
+      return;
+    }
+    this.setActiveQuestion(serverId, channelId, null);
   }
 
   getActiveQuestion(serverId: string, channelId: string): Maybe<string> {

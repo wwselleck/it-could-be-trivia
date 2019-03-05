@@ -3,7 +3,8 @@ import * as DiscordStorage from "../storage/discord_storage";
 
 export enum ActionType {
   UpdateActiveQuestion = "updateActiveQuestion",
-  Reply = "reply"
+  Reply = "reply",
+  CancelActiveQuestion = "cancelActiveQuestion"
 }
 
 type HandlerConfig = {
@@ -15,7 +16,7 @@ type HandlerConfig = {
 type UpdateActiveQuestion = {
   kind: ActionType.UpdateActiveQuestion;
   payload: {
-    questionId: string;
+    questionId: string | null;
   };
 };
 const handleUpdateActiveQuestion = ({ message, storage }: HandlerConfig) => (
@@ -26,6 +27,15 @@ const handleUpdateActiveQuestion = ({ message, storage }: HandlerConfig) => (
     message.channel.id,
     action.payload.questionId
   );
+};
+
+type CancelActiveQuestion = {
+  kind: ActionType.CancelActiveQuestion;
+};
+const handleCancelActiveQuestion = ({ message, storage }: HandlerConfig) => (
+  action: CancelActiveQuestion
+) => {
+  storage.cancelActiveQuestion(message.guild.id, message.channel.id);
 };
 
 type Reply = {
