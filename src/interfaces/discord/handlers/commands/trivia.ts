@@ -1,7 +1,7 @@
 import TriviaQuestions = require("@it-could-be/trivia-questions");
 
 import * as DiscordInterface from "../../discord";
-import * as DiscordActions from "../../actions/actions";
+import * as DiscordAction from "../../actions/action";
 import * as DiscordMessageContext from "../../discord_message_context";
 
 const { QuestionType, getRandomQuestion } = TriviaQuestions;
@@ -26,7 +26,7 @@ export const withQuestionLimit = fn => (
   if (ctx.activeQuestion && ctx.activeQuestion.id) {
     return [
       {
-        kind: DiscordActions.ActionType.Reply,
+        kind: DiscordAction.ActionType.Reply,
         payload: {
           content: "A question is already active"
         }
@@ -83,18 +83,10 @@ const handleMultipleChoiceQuestion = withUpdateActiveQuestion(
 
 export const triviaHandler = withQuestionLimit(
   (ctx: DiscordMessageContext.MessageContext) => {
-    let randomQuestion = getRandomQuestion();
-    switch (randomQuestion.question_type_id) {
-      case QuestionType.MULTIPLE_ANSWER:
-        return handleMultipleAnswerQuestion(randomQuestion)(ctx);
-        break;
-      case QuestionType.SINGLE_ANSWER:
-        return handleSingleAnswerQuestion(randomQuestion)(ctx);
-        break;
-      case QuestionType.MULTIPLE_CHOICE:
-        return handleMultipleChoiceQuestion(randomQuestion)(ctx);
-        break;
-    }
-    return [];
+    return [
+      {
+        kind: DiscordAction.ActionType.AskSingleAnswerQuestion
+      }
+    ];
   }
 );

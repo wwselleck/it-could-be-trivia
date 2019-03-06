@@ -1,4 +1,4 @@
-import { ActionType, Action } from "../../actions/actions";
+import { ActionType, Action } from "../../actions/action";
 import * as DiscordInterface from "../../discord";
 import * as DiscordMessageContext from "../../discord_message_context";
 import * as DiscordMessageHandler from "../../discord_message_handler";

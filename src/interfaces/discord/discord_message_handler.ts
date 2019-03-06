@@ -1,6 +1,6 @@
 import logger = require("pino");
 import * as DiscordInterface from "./discord";
-import * as DiscordActions from "./actions/actions";
+import * as DiscordActions from "./actions/action";
 import * as DiscordMessageContext from "./discord_message_context";
 import { commandHandler } from "./discord_command_handler";
 
