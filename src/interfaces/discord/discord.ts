@@ -35,6 +35,7 @@ export class DiscordInterface {
 
   constructor(config: DiscordInterfaceConfig) {
     this.config = config;
+    // Lift this up, interfacse should probs share logger
     this.logger = logger({ level: "debug" });
     this.client = new Discord.DiscordClient(this.config.token);
     this.actionHandler = new DiscordActions.DiscordActionHandler(

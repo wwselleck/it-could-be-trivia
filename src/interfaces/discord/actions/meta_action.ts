@@ -2,11 +2,13 @@ import TriviaQuestions = require("@it-could-be/trivia-questions");
 
 import { EffectActionType } from "./effect_action";
 import { Action } from "./action";
+import { contentForQuestion } from "./util";
 
 type MetaActionHandler = (action: MetaAction) => Array<Action>;
 
 export enum MetaActionType {
-  AskSingleAnswerQuestion = "askSingleAnswerQuestion"
+  AskSingleAnswerQuestion = "askSingleAnswerQuestion",
+  AskRandomQuestion = "askRandomQuestion"
 }
 
 export type AskSingleAnswerQuestion = {
@@ -32,11 +34,37 @@ function handleAskSingleAnswerQuestion(
   ];
 }
 
+export type AskRandomQuestion = {
+  kind: MetaActionType.AskRandomQuestion;
+};
+function handleAskRandomQuestion(
+  action: AskRandomQuestion
+): Array<Action> {
+  let question = TriviaQuestions.getRandomQuestion();
+  return [
+    {
+      kind: EffectActionType.UpdateActiveQuestion,
+      payload: {
+        questionId: question.id
+      }
+    },
+    {
+      kind: EffectActionType.Reply,
+      payload: {
+        content: contentForQuestion(question)
+      }
+    }
+  ];
+}
+
 export function processMetaAction(action: Action): Array<Action> {
   let actions: Array<Action> = [];
   switch (action.kind) {
     case MetaActionType.AskSingleAnswerQuestion:
       actions = handleAskSingleAnswerQuestion(action);
+      break;
+    case MetaActionType.AskRandomQuestion:
+      actions = handleAskRandomQuestion(action);
       break;
     default:
       return [action];
@@ -44,4 +72,4 @@ export function processMetaAction(action: Action): Array<Action> {
   return actions.flatMap(processMetaAction);
 }
 
-export type MetaAction = AskSingleAnswerQuestion;
+export type MetaAction = AskSingleAnswerQuestion | AskRandomQuestion;
