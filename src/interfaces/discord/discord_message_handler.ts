@@ -3,6 +3,7 @@ import * as DiscordInterface from "./discord";
 import * as DiscordActions from "./actions/action";
 import * as DiscordMessageContext from "./discord_message_context";
 import { commandHandler } from "./discord_command_handler";
+import { answerHandler } from "./handlers/answer";
 
 export type MessageHandler = (
   ctx: DiscordMessageContext.MessageContext
@@ -29,7 +30,8 @@ export const create = (config: DiscordMessageHandlerConfig) => (
   let { commandPrelude, commands } = config;
 
   let handlers = [
-    ...(commands ? [commandHandler(commandPrelude, commands)] : [])
+    ...(commands ? [commandHandler(commandPrelude, commands)] : []),
+    answerHandler()
   ];
   return handlers.reduce(
     (acc: Array<DiscordActions.Action>, curr: MessageHandler) => {

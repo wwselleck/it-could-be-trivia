@@ -1,9 +1,10 @@
 import logger = require("pino");
 import * as DiscordClient from "../../../lib/discord";
 import * as DiscordStorage from "../storage/discord_storage";
+import * as DiscordMessageContext from "../discord_message_context";
 import { Action } from "./action";
-import { processMetaAction } from "./meta_action";
-import { processEffectAction } from "./effect_action";
+import { processMetaAction } from "./meta";
+import { processEffectAction } from "./effect";
 
 export class DiscordActionHandler {
   private client: DiscordClient.DiscordClient;
@@ -20,8 +21,15 @@ export class DiscordActionHandler {
     this.logger = logger;
   }
 
-  handle(message: DiscordClient.Message, actions: Array<Action>) {
-    let flattenedActions = actions.map(processMetaAction).flat();
+  handle(
+    ctx: DiscordMessageContext.MessageContext,
+    message: DiscordClient.Message,
+    actions: Array<Action>
+  ) {
+    let config = { ctx };
+    let flattenedActions = actions
+      .map(action => processMetaAction(action, config))
+      .flat();
     this.logger.debug(
       {
         actions,

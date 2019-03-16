@@ -1,5 +1,4 @@
-import { ActionType, Action } from "../../actions/action";
-import * as DiscordInterface from "../../discord";
+import { Action, Reply, UpdateActiveQuestion } from "../../actions";
 import * as DiscordMessageContext from "../../discord_message_context";
 import * as DiscordMessageHandler from "../../discord_message_handler";
 
@@ -9,28 +8,16 @@ function handleDebugActiveQuestion(
   ctx: DiscordMessageContext.MessageContext
 ): Array<Action> {
   return [
-    {
-      kind: ActionType.Reply,
-      payload: {
-        content: ctx.activeQuestion
-          ? ctx.activeQuestion.id
-          : "No active question"
-      }
-    }
+    Reply.create(
+      ctx.activeQuestion ? ctx.activeQuestion.id : "No active question"
+    )
   ];
 }
 
 function handleDebugCancelActiveQuestion(
-  ctx: DiscordMessageContext.MessageContext
+  _: DiscordMessageContext.MessageContext
 ): Array<Action> {
-  return [
-    {
-      kind: ActionType.UpdateActiveQuestion,
-      payload: {
-        questionId: null
-      }
-    }
-  ];
+  return [UpdateActiveQuestion.create(null)];
 }
 
 const DebugCommands: Record<string, DiscordMessageHandler.MessageHandler> = {

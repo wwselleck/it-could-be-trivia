@@ -16,7 +16,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@it-could-be/trivia-questions": "0.0.3",
+    "@it-could-be/trivia-questions": "0.0.4",
     "@types/pino": "^5.8.5",
     "discord.js": "^11.4.2",
     "express": "^4.16.4",

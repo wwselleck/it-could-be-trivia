@@ -2,7 +2,7 @@ import logger = require("pino");
 import * as Discord from "../../lib/discord";
 import { DiscordStorage } from "./storage/discord_storage";
 import * as DiscordMessageHandler from "./discord_message_handler";
-import * as DiscordActions from "./actions/action";
+import * as DiscordActions from "./actions";
 import * as DiscordMessageContext from "./discord_message_context";
 
 import { triviaHandler } from "./handlers/commands/trivia";
@@ -62,7 +62,7 @@ export class DiscordInterface {
         storage: this.config.storage
       });
       let result = handler(context);
-      this.actionHandler.handle(message, result);
+      this.actionHandler.handle(context, message, result);
     };
   }
 }

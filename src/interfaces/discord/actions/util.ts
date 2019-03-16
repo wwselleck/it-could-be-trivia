@@ -8,7 +8,7 @@ function contentForSingleAnswerQuestion(
 
 export function contentForQuestion(question: TriviaQuestions.Question): string {
   switch (question.question_type_id) {
-    case TriviaQuestions.QuestionType.SINGLE_ANSWER:
+    case TriviaQuestions.QuestionType.SingleAnswer:
       return contentForSingleAnswerQuestion(question);
       break;
     default:
