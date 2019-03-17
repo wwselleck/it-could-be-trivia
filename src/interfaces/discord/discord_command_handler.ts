@@ -1,4 +1,3 @@
-import * as DiscordInterface from "./discord";
 import * as DiscordMessageHandler from "./discord_message_handler";
 import * as DiscordMessageContext from "./discord_message_context";
 import { Maybe, None } from "../../lib/types";
@@ -30,7 +29,7 @@ export const commandHandler = (
   // commands could be mapped to an object and closed over to
   // get rid of this O(N) operation. Premature optimization
   // at this point.
-  let command = commands.find(c => c.name === commandName);
+  let command = commands.find(c => c.name.includes(commandName as string));
   if (!command) {
     // Message was an invalid command
     return [];

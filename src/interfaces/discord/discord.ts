@@ -12,11 +12,11 @@ let defaultMessageHandler = DiscordMessageHandler.create({
   commandPrelude: "!",
   commands: [
     {
-      name: "trivia",
+      name: ["trivia"],
       handler: triviaHandler
     },
     {
-      name: "debug",
+      name: ["debug", "d"],
       handler: debugHandler()
     }
   ]
@@ -46,7 +46,6 @@ export class DiscordInterface {
   }
 
   connect() {
-    let { token } = this.config;
     this.client.connect({
       onMessage: [this.createMessageHandler()]
     });

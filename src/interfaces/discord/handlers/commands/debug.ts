@@ -22,7 +22,8 @@ function handleDebugCancelActiveQuestion(
 
 const DebugCommands: Record<string, DiscordMessageHandler.MessageHandler> = {
   activeQuestion: handleDebugActiveQuestion,
-  cancelActiveQuestion: handleDebugCancelActiveQuestion
+  cancelActiveQuestion: handleDebugCancelActiveQuestion,
+  caq: handleDebugCancelActiveQuestion
 };
 
 export const debugHandler = () => (
