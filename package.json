@@ -5,6 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "db:start": "./bin/tools.sh start-db",
+    "db:stop": "./bin/tools.sh stop-db",
     "start": "node dist/index.js",
     "lint": "prettier \"src/**/*\"",
     "watch": "./bin/tools.sh watch",

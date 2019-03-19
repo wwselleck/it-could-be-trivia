@@ -1,4 +1,7 @@
 NODE_MODULES_BIN="./node_modules/.bin"
+
+DB_CONTAINER_NAME="icbtrivia-db"
+
 set -x
 clean() {
     rm -rf dist
@@ -10,6 +13,15 @@ build() {
 
 lint() {
     prettier "src/**/*"
+}
+
+start_db() {
+    sudo docker run -p 27017:27017 --name ${DB_CONTAINER_NAME} -d mongo || sudo docker restart ${DB_CONTAINER_NAME}
+}
+
+stop_db() {
+    sudo docker stop ${DB_CONTAINER_NAME}
+
 }
 
 watch_source() {
@@ -28,6 +40,10 @@ case $1 in
     build) build
            ;;
     clean) clean
+           ;;
+    start-db) start_db
+           ;;
+    stop-db) stop_db
            ;;
     watch) watch
            ;;
