@@ -7,5 +7,5 @@ export const answerHandler = () => (
   if (!ctx.activeQuestion) {
     return [];
   }
-  return [Action.AnswerQuestion.create(ctx.activeQuestion.id)];
+  return [Action.AnswerQuestion.create(ctx.activeQuestion)];
 };

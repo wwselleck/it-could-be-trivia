@@ -1,3 +1,4 @@
+import * as TriviaQuestions from "@it-could-be/trivia-questions";
 import * as DiscordClient from "../../lib/discord";
 import * as DiscordStorage from "./storage/discord_storage";
 import { None } from "../../lib/types";
@@ -6,9 +7,7 @@ export type MessageContext = {
   message: {
     content: string;
   };
-  activeQuestion?: {
-    id: string;
-  };
+  activeQuestion: TriviaQuestions.Question | null;
 };
 
 type BuildMessageContextConfig = {
@@ -23,10 +22,12 @@ export function buildMessageContext({
   let channel = message.channel;
 
   let activeQuestionId = storage.getActiveQuestion(server.id, channel.id);
-  let activeQuestion =
-    activeQuestionId === None
-      ? {}
-      : { activeQuestion: { id: activeQuestionId } };
+  let activeQuestion = {
+    activeQuestion:
+      activeQuestionId === None
+        ? null
+        : TriviaQuestions.getQuestionById(activeQuestionId)
+  };
 
   return {
     message: {

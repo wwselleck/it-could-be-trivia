@@ -1,8 +1,9 @@
+import * as TriviaQuestions from "@it-could-be/trivia-questions";
 import { Maybe, None } from "../../../lib/types";
 
 type ChannelSchema = {
   id: string;
-  activeQuestionId: string | null;
+  activeQuestion: TriviaQuestions.Question | null;
 };
 
 type ServerSchema = {
@@ -92,7 +93,7 @@ const ensureChannel = (
           ...server.channels,
           [channelId]: {
             id: channelId,
-            activeQuestionId: null
+            activeQuestion: null
           }
         }
       }
@@ -121,13 +122,13 @@ export class DiscordInMemoryStorage {
   setActiveQuestion(
     serverId: string,
     channelId: string,
-    questionId: string | null
+    question: TriviaQuestions.Question | null
   ) {
     let data = this.data;
     data = ensureServer(data, serverId);
     data = ensureChannel(data, serverId, channelId);
     data = updateChannel(data, serverId, channelId, {
-      activeQuestionId: questionId
+      activeQuestion: question
     });
     this.data = data;
   }
@@ -142,11 +143,14 @@ export class DiscordInMemoryStorage {
     this.setActiveQuestion(serverId, channelId, null);
   }
 
-  getActiveQuestion(serverId: string, channelId: string): Maybe<string> {
+  getActiveQuestion(
+    serverId: string,
+    channelId: string
+  ): Maybe<TriviaQuestions.Question> {
     let channel = getChannel(this.data, serverId, channelId);
     if (channel === None) {
       return None;
     }
-    return channel.activeQuestionId || None;
+    return channel.activeQuestion || None;
   }
 }

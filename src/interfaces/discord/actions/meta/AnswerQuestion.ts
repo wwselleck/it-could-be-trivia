@@ -7,9 +7,7 @@ import { Action } from "../action";
 export type AnswerQuestionAction = {
   kind: MetaActionKind.AnswerQuestion;
   payload: {
-    question: {
-      id: string;
-    };
+    question: TriviaQuestions.Question;
   };
 };
 
@@ -17,9 +15,7 @@ export function handle(
   action: AnswerQuestionAction,
   config: MetaActionHandlerConfig
 ): Array<Action> {
-  let activeQuestion = TriviaQuestions.getQuestionById(
-    action.payload.question.id
-  );
+  let activeQuestion = action.payload.question;
   if (!activeQuestion) {
     return [];
   }
@@ -33,13 +29,13 @@ export function handle(
   return [];
 }
 
-export function create(questionId: string): AnswerQuestionAction {
+export function create(
+  question: TriviaQuestions.Question
+): AnswerQuestionAction {
   return {
     kind: MetaActionKind.AnswerQuestion,
     payload: {
-      question: {
-        id: questionId
-      }
+      question
     }
   };
 }
