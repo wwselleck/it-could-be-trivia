@@ -1,8 +1,8 @@
 import * as TriviaQuestions from "@it-could-be/trivia-questions";
-import { MetaActionKind } from "./MetaActionKind";
-import { Reply, UpdateActiveQuestion } from "../effect";
-import { MetaActionHandlerConfig } from "./meta_action";
 import { Action } from "../action";
+import { MetaActionHandlerConfig } from "./meta_action";
+import { MetaActionKind } from "./MetaActionKind";
+import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
 
 export type AnswerQuestionAction = {
   kind: MetaActionKind.AnswerQuestion;
@@ -13,18 +13,15 @@ export type AnswerQuestionAction = {
 
 export function handle(
   action: AnswerQuestionAction,
-  config: MetaActionHandlerConfig
+  _: MetaActionHandlerConfig
 ): Array<Action> {
   let activeQuestion = action.payload.question;
   if (!activeQuestion) {
     return [];
   }
-  let answer = config.ctx.message.content.trim();
-  if (TriviaQuestions.verifyAnswer(activeQuestion, answer)) {
-    return [
-      Reply.create(`${answer} is Correct!`),
-      UpdateActiveQuestion.create(null)
-    ];
+  switch (activeQuestion.question_type_id) {
+    case TriviaQuestions.QuestionType.SingleAnswer:
+      return [AnswerSingleAnswerQuestion.create(activeQuestion)];
   }
   return [];
 }

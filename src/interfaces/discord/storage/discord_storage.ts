@@ -5,9 +5,9 @@ export interface DiscordStorage {
     serverId: string,
     channelId: string,
     questionId: string | null
-  ): void;
+  ): Promise<void>;
 
   cancelActiveQuestion(serverId: string, channelId: string): void;
 
-  getActiveQuestion(serverId: string, channelId: string): Maybe<string>;
+  getActiveQuestion(serverId: string, channelId: string): Promise<Maybe<string>>;
 }

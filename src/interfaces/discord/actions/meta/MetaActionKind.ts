@@ -1,4 +1,5 @@
 export enum MetaActionKind {
   AskRandomQuestion = "askRandomQuestion",
-  AnswerQuestion = "answerQuestion"
+  AnswerQuestion = "answerQuestion",
+  AnswerSingleAnswerQuestion = "answerSingleAnswerQuestion"
 }

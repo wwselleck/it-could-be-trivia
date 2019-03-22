@@ -25,43 +25,41 @@ let defaultMessageHandler = DiscordMessageHandler.create({
 export interface DiscordInterfaceConfig {
   token: string;
   storage: DiscordStorage;
+  logger: logger.Logger;
 }
 
 export class DiscordInterface {
   private config: DiscordInterfaceConfig;
   private client: Discord.DiscordClient;
   private actionHandler: DiscordActions.DiscordActionHandler;
-  private logger: logger.Logger;
 
   constructor(config: DiscordInterfaceConfig) {
     this.config = config;
-    // Lift this up, interfacse should probs share logger
-    this.logger = logger({ level: "debug" });
     this.client = new Discord.DiscordClient(this.config.token);
     this.actionHandler = new DiscordActions.DiscordActionHandler(
       this.client,
       config.storage,
-      this.logger
+      this.config.logger
     );
   }
 
-  connect() {
+  async connect() {
     this.client.connect({
       onMessage: [this.createMessageHandler()]
     });
   }
 
   private createMessageHandler() {
-    let handler = DiscordMessageHandler.withLog(logger({ level: "debug" }))(
+    let handler = DiscordMessageHandler.withLog(this.config.logger)(
       defaultMessageHandler
     );
-    return (message: Discord.Message) => {
-      let context = DiscordMessageContext.buildMessageContext({
+    return async (message: Discord.Message) => {
+      let context = await DiscordMessageContext.buildMessageContext({
         message,
         storage: this.config.storage
       });
       let result = handler(context);
-      this.actionHandler.handle(context, message, result);
+      await this.actionHandler.handle(context, message, result);
     };
   }
 }

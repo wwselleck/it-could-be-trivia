@@ -17,10 +17,11 @@ export function create(questionId: string | null): UpdateActiveQuestionAction {
   };
 }
 
-export const handle = ({ message, storage }: EffectActionHandlerConfig) => (
-  action: UpdateActiveQuestionAction
-) => {
-  storage.setActiveQuestion(
+export const handle = ({
+  message,
+  storage
+}: EffectActionHandlerConfig) => async (action: UpdateActiveQuestionAction) => {
+  await storage.setActiveQuestion(
     message.guild.id,
     message.channel.id,
     action.payload.questionId

@@ -21,7 +21,7 @@ export class DiscordActionHandler {
     this.logger = logger;
   }
 
-  handle(
+  async handle(
     ctx: DiscordMessageContext.MessageContext,
     message: DiscordClient.Message,
     actions: Array<Action>
@@ -32,10 +32,11 @@ export class DiscordActionHandler {
       .flat();
     this.logger.debug(
       {
+        ctx,
         actions,
         flattenedActions
       },
-      "Flattened Actions"
+      "Actions for Message"
     );
 
     let handlerConfig = {
@@ -43,7 +44,7 @@ export class DiscordActionHandler {
       client: this.client,
       storage: this.storage
     };
-    let effectHandler = processEffectAction(handlerConfig);
+    let effectHandler = await processEffectAction(handlerConfig);
     flattenedActions.map(effectHandler);
   }
 }

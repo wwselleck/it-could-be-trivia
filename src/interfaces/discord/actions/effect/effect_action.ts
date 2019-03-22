@@ -24,16 +24,16 @@ export type EffectAction =
 
 export const processEffectAction = (
   handlerConfig: EffectActionHandlerConfig
-) => (action: Action) => {
+) => async (action: Action) => {
   switch (action.kind) {
     case EffectActionKind.UpdateActiveQuestion:
-      UpdateActiveQuestion.handle(handlerConfig)(action);
+      await UpdateActiveQuestion.handle(handlerConfig)(action);
       break;
     case EffectActionKind.Reply:
-      Reply.handle(handlerConfig)(action);
+      await Reply.handle(handlerConfig)(action);
       break;
     case EffectActionKind.CancelActiveQuestion:
-      CancelActiveQuestion.handle(handlerConfig)(action);
+      await CancelActiveQuestion.handle(handlerConfig)(action);
       break;
   }
 };
