@@ -11,6 +11,7 @@ export type MessageHandler = (
 export interface DiscordCommand {
   name: Array<string>;
   handler: MessageHandler;
+  subcommands?: Array<DiscordCommand>;
   allowedList?: Array<string>;
 }
 
@@ -43,13 +44,14 @@ export const create = (config: DiscordMessageHandlerConfig) => (
 export const withLog = (logger: logger.Logger) => (fn: MessageHandler) => (
   ctx: DiscordMessageContext.MessageContext
 ) => {
+  logger.debug({ ctx }, "Handling message");
   let result = fn(ctx);
   logger.debug(
     {
       ctx,
       result
     },
-    "Handling message"
+    "Handled message"
   );
   return result;
 };

@@ -6,18 +6,25 @@ import * as DiscordActions from "./actions";
 import * as DiscordMessageContext from "./discord_message_context";
 
 import { triviaHandler } from "./handlers/commands/trivia";
-import { debugHandler } from "./handlers/commands/debug";
+import { cancelActiveQuestionHandler } from "./handlers/commands/cancel";
+import { activeQuestionHandler } from "./handlers/commands/active";
 
 let defaultMessageHandler = DiscordMessageHandler.create({
   commandPrelude: "!",
   commands: [
     {
-      name: ["trivia"],
-      handler: triviaHandler
-    },
-    {
-      name: ["debug", "d"],
-      handler: debugHandler()
+      name: ["trivia", "t"],
+      handler: triviaHandler,
+      subcommands: [
+        {
+          name: ["cancel", "c"],
+          handler: cancelActiveQuestionHandler
+        },
+        {
+          name: ["active", "aq"],
+          handler: activeQuestionHandler
+        }
+      ]
     }
   ]
 });
