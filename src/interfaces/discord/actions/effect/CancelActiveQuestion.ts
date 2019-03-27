@@ -5,6 +5,10 @@ export type CancelActiveQuestionAction = {
   kind: EffectActionKind.CancelActiveQuestion;
 };
 
+export const create = (): CancelActiveQuestionAction => ({
+  kind: EffectActionKind.CancelActiveQuestion
+});
+
 export const handle = ({ message, storage }: EffectActionHandlerConfig) => (
   _: CancelActiveQuestionAction
 ) => {

@@ -5,6 +5,7 @@ import { MetaActionKind } from "./MetaActionKind";
 import * as AskRandomQuestion from "./AskRandomQuestion";
 import * as AnswerQuestion from "./AnswerQuestion";
 import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
+import * as CancelAndAnswer from "./CancelAndAnswer";
 
 export type MetaActionHandlerConfig = {
   ctx: DiscordMessageContext.MessageContext;
@@ -20,6 +21,9 @@ export function processMetaAction(
   config: MetaActionHandlerConfig
 ): Array<Action> {
   let actions: Array<Action> = [];
+
+  // Maybe clean this up at some point so all meta actions don't
+  // have to be manually added here
   switch (action.kind) {
     case MetaActionKind.AskRandomQuestion:
       actions = AskRandomQuestion.handle();
@@ -29,6 +33,9 @@ export function processMetaAction(
       break;
     case MetaActionKind.AnswerSingleAnswerQuestion:
       actions = AnswerSingleAnswerQuestion.handle(action, config);
+      break;
+    case MetaActionKind.CancelAndAnswer:
+      actions = CancelAndAnswer.handle(action, config);
       break;
     default:
       return [action];
@@ -43,4 +50,5 @@ export function processMetaAction(
 export type MetaAction =
   | AskRandomQuestion.AskRandomQuestionAction
   | AnswerQuestion.AnswerQuestionAction
-  | AnswerSingleAnswerQuestion.AnswerSingleAnswerQuestionAction;
+  | AnswerSingleAnswerQuestion.AnswerSingleAnswerQuestionAction
+  | CancelAndAnswer.CancelAndAnswerAction;

@@ -18,7 +18,11 @@ let defaultMessageHandler = DiscordMessageHandler.create({
       subcommands: [
         {
           name: ["cancel", "c"],
-          handler: cancelActiveQuestionHandler
+          handler: cancelActiveQuestionHandler(false)
+        },
+        {
+          name: ["answer", "a"],
+          handler: cancelActiveQuestionHandler(true)
         },
         {
           name: ["active", "aq"],

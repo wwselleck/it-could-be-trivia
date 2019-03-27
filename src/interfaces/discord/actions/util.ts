@@ -14,3 +14,12 @@ export function contentForQuestion(question: TriviaQuestions.Question): string {
       return "Gimme a single answer question";
   }
 }
+
+export function answerForQuestion(question: TriviaQuestions.Question): string {
+  switch (question.question_type_id) {
+    case TriviaQuestions.QuestionType.SingleAnswer:
+      return TriviaQuestions.SingleAnswerQuestion.getAnswer(question);
+    default:
+      return "Gimme a single answer question";
+  }
+}
