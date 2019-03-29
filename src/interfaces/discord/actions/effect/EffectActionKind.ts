@@ -1,5 +1,6 @@
 export enum EffectActionKind {
   Reply = "reply",
   UpdateActiveQuestion = "updateActiveQuestion",
-  CancelActiveQuestion = "cancelActiveQuestion"
+  CancelActiveQuestion = "cancelActiveQuestion",
+  UpdateSenderScore = "updateSenderScore"
 }

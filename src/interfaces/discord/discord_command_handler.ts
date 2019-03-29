@@ -55,6 +55,9 @@ export const commandHandler = (
     return command.handler(ctx);
   }
 
+  // Creating this temp context seems wrong
+  // but it works for now and it's an immutable change.
+  // Possibly rework later
   let newContext = {
     ...ctx,
     message: {

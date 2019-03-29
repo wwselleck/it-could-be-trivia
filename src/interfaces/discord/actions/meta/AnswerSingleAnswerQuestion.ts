@@ -1,6 +1,6 @@
 import * as TriviaQuestions from "@it-could-be/trivia-questions";
 import { MetaActionKind } from "./MetaActionKind";
-import { Reply, UpdateActiveQuestion } from "../effect";
+import { Reply, UpdateActiveQuestion, UpdateSenderScore } from "../effect";
 import { MetaActionHandlerConfig } from "./meta_action";
 import { Action } from "../action";
 
@@ -32,7 +32,11 @@ export function handle(
       reply = `${result.exactAnswer}, or ${answer}, is correct! ${mention}`;
     }
 
-    return [Reply.create(reply), UpdateActiveQuestion.create(null)];
+    return [
+      Reply.create(reply),
+      UpdateSenderScore.create(1),
+      UpdateActiveQuestion.create(null)
+    ];
   }
   return [];
 }

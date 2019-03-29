@@ -3,6 +3,15 @@ import mongoose = require("mongoose");
 import { DiscordStorage } from "./discord_storage";
 import { Maybe, None } from "../../../lib/types";
 
+interface UserModel extends mongoose.Document {
+  userId: string;
+  score: number;
+}
+const UserSchema = new mongoose.Schema<UserModel>({
+  userId: { type: String },
+  score: { type: Number }
+});
+
 interface ChannelModel extends mongoose.Document {
   channelId: string;
   activeQuestion: {
@@ -29,6 +38,10 @@ const ServerSchema = new mongoose.Schema<ServerModel>({
   channels: {
     type: Map,
     of: ChannelSchema
+  },
+  users: {
+    type: Map,
+    of: UserSchema
   }
 });
 
@@ -40,7 +53,7 @@ function registerModels(conn: mongoose.Connection) {
 
 type MongoQuery<T> = {
   name: string;
-  fn: (models: Models) => Promise<[any, T]>;
+  fn: (models: Models) => Promise<T>;
 };
 
 /**
@@ -48,18 +61,14 @@ type MongoQuery<T> = {
  * and null check for the models.
  */
 function runMongoQuery<T>(logger: pino.Logger, models?: Models) {
-  return function(query: MongoQuery<T>): Promise<[any, T]> {
+  return async function(query: MongoQuery<T>): Promise<T> {
     if (!models) {
-      return Promise.reject("No Models");
+      throw new Error("No Models");
     }
 
-    return query.fn(models).then(([err, result]) => {
-      logger.debug({ query: query.name, err, result }, `Ran Query`);
-      if (err) {
-        throw err;
-      }
-      return [err, result] as [any, T];
-    });
+    let result = await query.fn(models);
+    logger.debug({ query: query.name, result }, `Ran Query`);
+    return result as T;
   };
 }
 
@@ -86,93 +95,108 @@ export class DiscordMongoStorage implements DiscordStorage {
     this.models = registerModels(this.conn);
   }
 
-  setActiveQuestion(
+  async setActiveQuestion(
     serverId: string,
     channelId: string,
     questionId: string | null
-  ): Promise<any> {
+  ): Promise<void> {
     if (!questionId) {
       return this.cancelActiveQuestion(serverId, channelId);
     }
-    return runMongoQuery<any>(this.logger, this.models)({
+    await runMongoQuery<void>(this.logger, this.models)({
       name: `setActiveQuestion(${serverId},${channelId},${questionId})`,
-      fn: (models: Models) => {
-        return new Promise(resolve => {
-          models.Server.update(
-            {
-              serverId
-            },
-            {
-              $set: {
-                [`channels.${channelId}.activeQuestion.id`]: questionId
-              }
-            },
-            { upsert: true },
-            (...args) => {
-              resolve(args);
+      fn: async (models: Models) => {
+        let query = models.Server.update(
+          {
+            serverId
+          },
+          {
+            $set: {
+              [`channels.${channelId}.activeQuestion.id`]: questionId
             }
-          );
-        });
+          },
+          { upsert: true }
+        );
+        return query.exec();
       }
     });
+    return;
   }
 
-  cancelActiveQuestion(serverId: string, channelId: string): Promise<any> {
-    return runMongoQuery<any>(this.logger, this.models)({
+  async cancelActiveQuestion(
+    serverId: string,
+    channelId: string
+  ): Promise<any> {
+    await runMongoQuery<any>(this.logger, this.models)({
       name: `cancelActiveQuestion(${serverId},${channelId})`,
       fn: (models: Models) => {
-        return new Promise(resolve => {
-          models.Server.update(
-            {
-              serverId
-            },
-            {
-              $unset: {
-                [`channels.${channelId}.activeQuestion`]: 1
-              }
-            },
-            (...args) => resolve(args)
-          );
-        });
+        let query = models.Server.update(
+          {
+            serverId
+          },
+          {
+            $unset: {
+              [`channels.${channelId}.activeQuestion`]: 1
+            }
+          }
+        );
+        return query.exec();
       }
     });
+    return;
   }
 
-  getActiveQuestion(
+  async getActiveQuestion(
     serverId: string,
     channelId: string
   ): Promise<Maybe<string>> {
-    return runMongoQuery<ServerModel>(this.logger, this.models)({
+    let server = await runMongoQuery<ServerModel | null>(
+      this.logger,
+      this.models
+    )({
       name: `getActiveQuestion(${serverId},${channelId})`,
-      fn: (models: Models) => {
-        return new Promise(resolve => {
-          models.Server.findOne(
-            {
-              serverId,
-              [`channels.${channelId}.activeQuestion`]: { $exists: true }
-            },
-            {
-              serverId: 1,
-              [`channels.${channelId}.activeQuestion`]: 1
-            },
-            (err, server: ServerModel) => {
-              resolve([err, server]);
-            }
-          );
-        });
+      fn: async (models: Models) => {
+        let query = models.Server.findOne(
+          {
+            serverId,
+            [`channels.${channelId}.activeQuestion`]: { $exists: true }
+          },
+          {
+            serverId: 1,
+            [`channels.${channelId}.activeQuestion`]: 1
+          }
+        );
+        return query.exec();
       }
-    }).then(([err, server]) => {
-      if (err) {
-        throw err;
-      }
-      if (!server) {
-        return None;
-      }
-      let channel = server.channels!.get(channelId);
-      if (!channel!.activeQuestion) {
-        return None;
-      }
-      return channel!.activeQuestion.id;
     });
+
+    if (!server) {
+      return None;
+    }
+
+    let channel = server.channels!.get(channelId);
+    if (!channel!.activeQuestion) {
+      return None;
+    }
+    return channel!.activeQuestion.id;
+  }
+
+  async updateScore(serverId: string, userId: string, increase: number) {
+    await runMongoQuery<void>(this.logger, this.models)({
+      name: `addScore(${serverId},${userId},${increase})`,
+      fn: async (models: Models) => {
+        models.Server.update(
+          {
+            serverId
+          },
+          {
+            $inc: {
+              [`users.${userId}.score`]: 1
+            }
+          }
+        ).exec();
+      }
+    });
+    return;
   }
 }
