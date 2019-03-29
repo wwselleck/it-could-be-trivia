@@ -14,6 +14,8 @@ export interface DiscordStorage {
     channelId: string
   ): Promise<Maybe<string>>;
 
+  getUserScore(serverId: string, userId: string): Promise<number>;
+
   updateScore(
     serverId: string,
     userId: string,

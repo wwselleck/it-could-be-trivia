@@ -27,9 +27,13 @@ export function handle(
     let reply: string;
     let mention = `<@${config.ctx.message.sender.id}>`;
     if (result.isExactAnswer) {
-      reply = `${answer} is Correct! ${mention}`;
+      reply = `${answer} is Correct! ${mention} your score is now ${config.ctx
+        .message.sender.score + 1}`;
     } else {
-      reply = `${result.exactAnswer}, or ${answer}, is correct! ${mention}`;
+      reply = `${
+        result.exactAnswer
+      }, or ${answer}, is correct! ${mention} your score is now ${config.ctx
+        .message.sender.score + 1}`;
     }
 
     return [

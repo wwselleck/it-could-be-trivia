@@ -32,6 +32,7 @@ const ChannelSchema = new mongoose.Schema<ChannelModel>({
 interface ServerModel extends mongoose.Document {
   serverId: string;
   channels: Map<string, ChannelModel>;
+  users: Map<string, UserModel>;
 }
 const ServerSchema = new mongoose.Schema<ServerModel>({
   serverId: { type: String },
@@ -181,11 +182,38 @@ export class DiscordMongoStorage implements DiscordStorage {
     return channel!.activeQuestion.id;
   }
 
+  async getUserScore(
+    serverId: string,
+    userId: string
+  ): Promise<UserModel["score"]> {
+    let server = await runMongoQuery<ServerModel | null>(
+      this.logger,
+      this.models
+    )({
+      name: `getUserScore(${serverId},${userId})`,
+      fn: async (models: Models) => {
+        return models.Server.findOne(
+          {
+            serverId
+          },
+          {
+            serverId: 1,
+            [`users.${userId}.score`]: 1
+          }
+        ).exec();
+      }
+    });
+    if (!server || !server.users.get(userId)) {
+      throw new Error("just look here");
+    }
+    return server.users.get(userId)!.get("score");
+  }
+
   async updateScore(serverId: string, userId: string, increase: number) {
     await runMongoQuery<void>(this.logger, this.models)({
       name: `addScore(${serverId},${userId},${increase})`,
       fn: async (models: Models) => {
-        models.Server.update(
+        await models.Server.update(
           {
             serverId
           },

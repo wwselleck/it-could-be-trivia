@@ -10,6 +10,7 @@ export type MessageContext = {
     sender: {
       id: string;
       username: string;
+      score: number;
     };
   };
   activeQuestion: TriviaQuestions.Question | null;
@@ -40,7 +41,8 @@ export async function buildMessageContext({
       content: message.content,
       sender: {
         id: message.author.id,
-        username: message.author.username
+        username: message.author.username,
+        score: await storage.getUserScore(server.id, message.author.id)
       }
     },
     ...activeQuestion
