@@ -1,4 +1,5 @@
 import * as TriviaQuestions from "@it-could-be/trivia-questions";
+import { MessageContext } from "../../discord_message_context";
 import { MetaActionKind } from "./MetaActionKind";
 import { Reply, UpdateActiveQuestion, UpdateSenderScore } from "../effect";
 import { MetaActionHandlerConfig } from "./meta_action";
@@ -10,6 +11,20 @@ export type AnswerSingleAnswerQuestionAction = {
     question: TriviaQuestions.SingleAnswerQuestion.SingleAnswerQuestion;
   };
 };
+
+function getReplyText(
+  ctx: MessageContext,
+  answer: string,
+  answerResult: TriviaQuestions.SingleAnswerQuestion.AnswerResult
+) {
+  return [
+    answerResult.isExactAnswer
+      ? `${answer}, is correct`
+      : `${answerResult.exactAnswer}, or ${answer}, is correct!`,
+    `<@${ctx.message.sender.id}>`,
+    `your score is now ${ctx.message.sender.score + 1}`
+  ].join(" ");
+}
 
 export function handle(
   action: AnswerSingleAnswerQuestionAction,
@@ -24,20 +39,8 @@ export function handle(
   );
 
   if (result.isCorrect) {
-    let reply: string;
-    let mention = `<@${config.ctx.message.sender.id}>`;
-    if (result.isExactAnswer) {
-      reply = `${answer} is Correct! ${mention} your score is now ${config.ctx
-        .message.sender.score + 1}`;
-    } else {
-      reply = `${
-        result.exactAnswer
-      }, or ${answer}, is correct! ${mention} your score is now ${config.ctx
-        .message.sender.score + 1}`;
-    }
-
     return [
-      Reply.create(reply),
+      Reply.create(getReplyText(config.ctx, answer, result)),
       UpdateSenderScore.create(1),
       UpdateActiveQuestion.create(null)
     ];
