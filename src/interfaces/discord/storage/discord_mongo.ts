@@ -203,10 +203,13 @@ export class DiscordMongoStorage implements DiscordStorage {
         ).exec();
       }
     });
-    if (!server || !server.users.get(userId)) {
-      throw new Error("just look here");
+    if (!server || !server.get("users") || !server.get("users").get(userId)) {
+      return 0;
     }
-    return server.users.get(userId)!.get("score");
+    return server
+      .get("users")
+      .get(userId)!
+      .get("score");
   }
 
   async updateScore(serverId: string, userId: string, increase: number) {
