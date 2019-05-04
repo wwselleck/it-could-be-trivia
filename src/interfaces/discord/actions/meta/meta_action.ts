@@ -1,5 +1,5 @@
 import { logger } from "../../../../lib/logger";
-import * as DiscordMessageContext from "../../discord_message_context";
+import { MessageContext } from "../../../message_context";
 import { Action } from "../action";
 import { MetaActionKind } from "./MetaActionKind";
 import * as AskRandomQuestion from "./AskRandomQuestion";
@@ -8,7 +8,7 @@ import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
 import * as CancelAndAnswer from "./CancelAndAnswer";
 
 export type MetaActionHandlerConfig = {
-  ctx: DiscordMessageContext.MessageContext;
+  ctx: MessageContext;
 };
 
 export type MetaActionHandler = (

@@ -1,5 +1,5 @@
 import * as TriviaQuestions from "@it-could-be/trivia-questions";
-import { MessageContext } from "../../discord_message_context";
+import { MessageContext } from "../../../message_context";
 import { MetaActionKind } from "./MetaActionKind";
 import { Reply, UpdateActiveQuestion, UpdateSenderScore } from "../effect";
 import { MetaActionHandlerConfig } from "./meta_action";

@@ -1,25 +1,15 @@
 import * as TriviaQuestions from "@it-could-be/trivia-questions";
-import { logger } from "../../lib/logger";
 import * as DiscordClient from "../../lib/discord";
 import * as DiscordStorage from "./storage/discord_storage";
 import { None } from "../../lib/types";
-
-export type MessageContext = {
-  message: {
-    content: string;
-    sender: {
-      id: string;
-      username: string;
-      score: number;
-    };
-  };
-  activeQuestion: TriviaQuestions.Question | null;
-};
+import { logger } from "../../lib/logger";
+import { MessageContext } from "../message_context";
 
 type BuildMessageContextConfig = {
   message: DiscordClient.Message;
   storage: DiscordStorage.DiscordStorage;
 };
+
 export async function buildMessageContext({
   message,
   storage

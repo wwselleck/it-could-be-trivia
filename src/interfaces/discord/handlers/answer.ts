@@ -1,8 +1,8 @@
-import * as DiscordMessageContext from "../discord_message_context";
+import { MessageContext } from "../../message_context";
 import * as Action from "../actions";
 
 export const answerHandler = () => (
-  ctx: DiscordMessageContext.MessageContext
+  ctx: MessageContext
 ): Array<Action.Action> => {
   if (!ctx.activeQuestion) {
     return [];

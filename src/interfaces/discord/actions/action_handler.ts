@@ -1,7 +1,7 @@
 import logger = require("pino");
 import * as DiscordClient from "../../../lib/discord";
 import * as DiscordStorage from "../storage/discord_storage";
-import * as DiscordMessageContext from "../discord_message_context";
+import { MessageContext } from "../../message_context";
 import { Action } from "./action";
 import { processMetaAction } from "./meta";
 import { processEffectAction } from "./effect";
@@ -22,7 +22,7 @@ export class DiscordActionHandler {
   }
 
   async handle(
-    ctx: DiscordMessageContext.MessageContext,
+    ctx: MessageContext,
     message: DiscordClient.Message,
     actions: Array<Action>
   ) {

@@ -1,13 +1,8 @@
-import {
-  Action,
-  Reply,
-  CancelActiveQuestion,
-  CancelAndAnswer
-} from "../../actions";
-import * as DiscordMessageContext from "../../discord_message_context";
+import { Action, CancelActiveQuestion, CancelAndAnswer } from "../../actions";
+import { MessageContext } from "../../../message_context";
 
 export const cancelActiveQuestionHandler = (replyWithAnswer = false) => (
-  _: DiscordMessageContext.MessageContext
+  _: MessageContext
 ): Array<Action> => {
   if (replyWithAnswer) {
     return [CancelAndAnswer.create()];
