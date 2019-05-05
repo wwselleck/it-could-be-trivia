@@ -8,14 +8,14 @@ import { Action } from "../action";
 export type AnswerSingleAnswerQuestionAction = {
   kind: MetaActionKind.AnswerSingleAnswerQuestion;
   payload: {
-    question: TriviaQuestions.SingleAnswerQuestion.SingleAnswerQuestion;
+    question: TriviaQuestions.SingleAnswerQuestion;
   };
 };
 
 function getReplyText(
   ctx: MessageContext,
   answer: string,
-  answerResult: TriviaQuestions.SingleAnswerQuestion.AnswerResult
+  answerResult: TriviaQuestions.Answer.SingleAnswerQuestion.AnswerResult
 ) {
   return [
     answerResult.isExactAnswer
@@ -33,7 +33,7 @@ export function handle(
   let answer = config.ctx.message.content.trim();
   let question = action.payload.question;
 
-  let result = TriviaQuestions.SingleAnswerQuestion.verifyAnswer(
+  let result = TriviaQuestions.Answer.SingleAnswerQuestion.verifyAnswer(
     question,
     answer
   );
@@ -49,7 +49,7 @@ export function handle(
 }
 
 export function create(
-  question: TriviaQuestions.SingleAnswerQuestion.SingleAnswerQuestion
+  question: TriviaQuestions.SingleAnswerQuestion
 ): AnswerSingleAnswerQuestionAction {
   return {
     kind: MetaActionKind.AnswerSingleAnswerQuestion,
