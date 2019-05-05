@@ -8,10 +8,10 @@ export type CancelAndAnswerAction = {
   kind: MetaActionKind.CancelAndAnswer;
 };
 
-export function handle(
+export async function handle(
   _: CancelAndAnswerAction,
   config: MetaActionHandlerConfig
-): Array<Action> {
+): Promise<Array<Action>> {
   let question = config.ctx.activeQuestion;
   if (!question) {
     return [];

@@ -8,6 +8,7 @@ import * as DiscordMessageContext from "./discord_message_context";
 import { triviaHandler } from "./handlers/commands/trivia";
 import { cancelActiveQuestionHandler } from "./handlers/commands/cancel";
 import { activeQuestionHandler } from "./handlers/commands/active";
+import { leaderboardHandler } from "./handlers/commands/leaderboard";
 
 let defaultMessageHandler = DiscordMessageHandler.create({
   commandPrelude: "!",
@@ -27,6 +28,10 @@ let defaultMessageHandler = DiscordMessageHandler.create({
         {
           name: ["active", "aq"],
           handler: activeQuestionHandler
+        },
+        {
+          name: ["leaderboard", "lb"],
+          handler: leaderboardHandler
         }
       ]
     }

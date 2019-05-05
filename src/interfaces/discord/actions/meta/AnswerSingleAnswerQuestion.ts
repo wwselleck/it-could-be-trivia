@@ -4,6 +4,7 @@ import { MetaActionKind } from "./MetaActionKind";
 import { Reply, UpdateActiveQuestion, UpdateSenderScore } from "../effect";
 import { MetaActionHandlerConfig } from "./meta_action";
 import { Action } from "../action";
+import { mentionForUserId } from "../util";
 
 export type AnswerSingleAnswerQuestionAction = {
   kind: MetaActionKind.AnswerSingleAnswerQuestion;
@@ -21,15 +22,15 @@ function getReplyText(
     answerResult.isExactAnswer
       ? `${answer}, is correct`
       : `${answerResult.exactAnswer}, or ${answer}, is correct!`,
-    `<@${ctx.message.sender.id}>`,
+    mentionForUserId(ctx.message.sender.id),
     `your score is now ${ctx.message.sender.score + 1}`
   ].join(" ");
 }
 
-export function handle(
+export async function handle(
   action: AnswerSingleAnswerQuestionAction,
   config: MetaActionHandlerConfig
-): Array<Action> {
+): Promise<Array<Action>> {
   let answer = config.ctx.message.content.trim();
   let question = action.payload.question;
 

@@ -8,7 +8,7 @@ export type AskRandomQuestionAction = {
   kind: MetaActionKind.AskRandomQuestion;
 };
 
-export function handle(): Array<Action> {
+export async function handle(): Promise<Array<Action>> {
   let question = TriviaQuestions.getRandomQuestion();
   return [
     UpdateActiveQuestion.create(question.id),

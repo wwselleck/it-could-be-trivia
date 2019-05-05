@@ -11,10 +11,10 @@ export type AnswerQuestionAction = {
   };
 };
 
-export function handle(
+export async function handle(
   action: AnswerQuestionAction,
   _: MetaActionHandlerConfig
-): Array<Action> {
+): Promise<Array<Action>> {
   let activeQuestion = action.payload.question;
   if (!activeQuestion) {
     return [];

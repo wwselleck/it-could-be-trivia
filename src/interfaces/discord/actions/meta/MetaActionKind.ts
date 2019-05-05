@@ -2,5 +2,6 @@ export enum MetaActionKind {
   AskRandomQuestion = "askRandomQuestion",
   AnswerQuestion = "answerQuestion",
   AnswerSingleAnswerQuestion = "answerSingleAnswerQuestion",
-  CancelAndAnswer = "cancelAndAnswer"
+  CancelAndAnswer = "cancelAndAnswer",
+  ShowLeaderboard = "showLeaderboard"
 }

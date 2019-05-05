@@ -1,4 +1,9 @@
 import TriviaQuestions = require("@it-could-be/trivia-questions");
+import { User } from "../storage/models";
+
+export function mentionForUserId(userId: string) {
+  return `<@${userId}>`;
+}
 
 function contentForSingleAnswerQuestion(
   question: TriviaQuestions.SingleAnswerQuestion
@@ -22,4 +27,12 @@ export function answerForQuestion(question: TriviaQuestions.Question): string {
     default:
       return "Gimme a single answer question";
   }
+}
+
+export function contentForLeaderboard(users: Array<User>) {
+  return users
+    .map((u, i) => {
+      return `${i + 1}. ${u.name} (${u.score} points)`;
+    })
+    .join("\n");
 }

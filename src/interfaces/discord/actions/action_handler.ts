@@ -26,10 +26,10 @@ export class DiscordActionHandler {
     message: DiscordClient.Message,
     actions: Array<Action>
   ) {
-    let config = { ctx };
-    let flattenedActions = actions
-      .map(action => processMetaAction(action, config))
-      .flat();
+    let config = { ctx, storage: this.storage, message };
+    let flattenedActions = (await Promise.all(
+      actions.map(action => processMetaAction(action, config))
+    )).flat();
     this.logger.debug(
       {
         ctx,

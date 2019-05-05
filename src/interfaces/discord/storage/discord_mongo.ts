@@ -2,22 +2,17 @@ import pino = require("pino");
 import mongoose = require("mongoose");
 import { DiscordStorage } from "./discord_storage";
 import { Maybe, None } from "../../../lib/types";
+import { Server, Channel, User } from "./models";
 
-interface UserModel extends mongoose.Document {
-  userId: string;
-  score: number;
-}
+interface UserModel extends User, mongoose.Document {}
+
 const UserSchema = new mongoose.Schema<UserModel>({
   userId: { type: String },
   score: { type: Number }
 });
 
-interface ChannelModel extends mongoose.Document {
-  channelId: string;
-  activeQuestion: {
-    id: string;
-  };
-}
+interface ChannelModel extends Channel, mongoose.Document {}
+
 const ChannelSchema = new mongoose.Schema<ChannelModel>({
   channelId: { type: String },
   activeQuestion: {
@@ -29,11 +24,8 @@ const ChannelSchema = new mongoose.Schema<ChannelModel>({
   }
 });
 
-interface ServerModel extends mongoose.Document {
-  serverId: string;
-  channels: Map<string, ChannelModel>;
-  users: Map<string, UserModel>;
-}
+interface ServerModel extends Server, mongoose.Document {}
+
 const ServerSchema = new mongoose.Schema<ServerModel>({
   serverId: { type: String },
   channels: {
@@ -221,6 +213,7 @@ export class DiscordMongoStorage implements DiscordStorage {
             serverId
           },
           {
+            [`users.${userId}.userId`]: userId,
             $inc: {
               [`users.${userId}.score`]: 1
             }
@@ -229,5 +222,32 @@ export class DiscordMongoStorage implements DiscordStorage {
       }
     });
     return;
+  }
+
+  async getTopScores(serverId: string): Promise<Array<User>> {
+    let server = await runMongoQuery<ServerModel | null>(
+      this.logger,
+      this.models
+    )({
+      name: `getTopScores(${serverId})`,
+      fn: async (models: Models) => {
+        return models.Server.findOne(
+          {
+            serverId
+          },
+          {
+            users: 1
+          }
+        ).exec();
+      }
+    });
+    if (!server) {
+      return [];
+    }
+    let users: Array<User> = Array.from<UserModel>(
+      server.get("users").values()
+    ).map(u => u.toObject());
+    let sortedUsers = users.sort((u1: User, u2: User) => u2.score - u1.score);
+    return sortedUsers;
   }
 }

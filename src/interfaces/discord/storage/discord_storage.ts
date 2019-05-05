@@ -1,4 +1,5 @@
 import { Maybe } from "../../../lib/types";
+import { User } from "./models";
 
 export interface DiscordStorage {
   setActiveQuestion(
@@ -21,4 +22,6 @@ export interface DiscordStorage {
     userId: string,
     increase: number
   ): Promise<void>;
+
+  getTopScores(serverId: string): Promise<Array<User>>;
 }
