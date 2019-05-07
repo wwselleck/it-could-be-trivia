@@ -23,7 +23,9 @@ Right now, the only option for using this bot is by cloning it and hosting it yo
 All config is passed into the program via environment variables.
 
 `DISCORD_TOKEN` - The token for the discord bot user you want to connect the trivia bot to
+
 `DB_URI` - URI to the MongoDB instance you want to connect to
+
 `LOG_LEVEL` - `info|debug|trace` The error level you want for the logs
 
 ## Usage
