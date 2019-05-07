@@ -15,6 +15,10 @@ lint() {
     prettier "src/**/*"
 }
 
+start() {
+    "node" "dist/index.js"
+}
+
 start_db() {
     sudo docker run -p 27017:27017 --name ${DB_CONTAINER_NAME} -d mongo || sudo docker restart ${DB_CONTAINER_NAME}
 }
@@ -40,6 +44,8 @@ case $1 in
     build) build
            ;;
     clean) clean
+           ;;
+    start) start
            ;;
     start-db) start_db
            ;;
