@@ -36,3 +36,7 @@ export function contentForLeaderboard(users: Array<User>) {
     })
     .join("\n");
 }
+
+export function contentForUserScore(userId: string, userScore: number) {
+  return `${mentionForUserId(userId)}, your score is ${userScore}.`;
+}

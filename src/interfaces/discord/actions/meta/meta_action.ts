@@ -9,6 +9,7 @@ import * as AnswerQuestion from "./AnswerQuestion";
 import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
 import * as CancelAndAnswer from "./CancelAndAnswer";
 import * as ShowLeaderboard from "./ShowLeaderboard";
+import * as ShowUserScore from "./ShowUserScore";
 
 export type MetaActionHandlerConfig = {
   ctx: MessageContext;
@@ -45,6 +46,9 @@ export async function processMetaAction(
     case MetaActionKind.ShowLeaderboard:
       actions = ShowLeaderboard.handle(action, config);
       break;
+    case MetaActionKind.ShowUserScore:
+      actions = ShowUserScore.handle(action, config);
+      break;
     default:
       return [action];
   }
@@ -60,4 +64,5 @@ export type MetaAction =
   | AnswerQuestion.AnswerQuestionAction
   | AnswerSingleAnswerQuestion.AnswerSingleAnswerQuestionAction
   | CancelAndAnswer.CancelAndAnswerAction
-  | ShowLeaderboard.ShowLeaderboardAction;
+  | ShowLeaderboard.ShowLeaderboardAction
+  | ShowUserScore.ShowUserScoreAction;

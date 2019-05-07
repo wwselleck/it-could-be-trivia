@@ -3,5 +3,6 @@ export enum MetaActionKind {
   AnswerQuestion = "answerQuestion",
   AnswerSingleAnswerQuestion = "answerSingleAnswerQuestion",
   CancelAndAnswer = "cancelAndAnswer",
-  ShowLeaderboard = "showLeaderboard"
+  ShowLeaderboard = "showLeaderboard",
+  ShowUserScore = "showUserScore"
 }
