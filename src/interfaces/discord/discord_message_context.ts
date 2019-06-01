@@ -4,6 +4,7 @@ import * as DiscordStorage from "./storage/discord_storage";
 import { None } from "../../lib/types";
 import { logger } from "../../lib/logger";
 import { MessageContext } from "../message_context";
+const questions = require("@it-could-be/trivia-questions/dist/questions.json");
 
 type BuildMessageContextConfig = {
   message: DiscordClient.Message;
@@ -23,7 +24,7 @@ export async function buildMessageContext({
     activeQuestion:
       activeQuestionId === None
         ? null
-        : TriviaQuestions.getQuestionById(activeQuestionId)
+        : TriviaQuestions.getQuestionById(questions, activeQuestionId)
   };
 
   let ctx = {

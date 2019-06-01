@@ -7,7 +7,7 @@ import { DiscordMongoStorage } from "./interfaces/discord/storage/discord_mongo"
 function createStorage(config: Config.Config, logger: pino.Logger) {
   let uri = config.db.uri;
   if (!uri) {
-    throw new Error("No URI specified");
+    throw new Error("No Mongo URI specified");
   }
   return new DiscordMongoStorage(uri, logger);
 }

@@ -11,12 +11,20 @@ function contentForSingleAnswerQuestion(
   return question.detail.text;
 }
 
+function contentForMultipleAnswerQuestion(
+  question: TriviaQuestions.MultipleAnswerQuestion
+) {
+  return question.detail.text;
+}
+
 export function contentForQuestion(question: TriviaQuestions.Question): string {
   switch (question.question_type_id) {
     case TriviaQuestions.QuestionType.SingleAnswer:
       return contentForSingleAnswerQuestion(question);
+    case TriviaQuestions.QuestionType.MultipleAnswer:
+      return contentForMultipleAnswerQuestion(question);
     default:
-      return "Gimme a single answer question";
+      return "Ooopsy";
   }
 }
 
