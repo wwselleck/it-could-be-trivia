@@ -12,7 +12,7 @@ export type AskRandomQuestionAction = {
 export async function handle(): Promise<Array<Action>> {
   console.log(questions);
   let question = TriviaQuestions.getRandomQuestion(questions, {
-    types: [TriviaQuestions.QuestionType.MultipleAnswer]
+    types: [TriviaQuestions.QuestionType.SingleAnswer]
   });
   return [
     UpdateActiveQuestion.create(question.id),
