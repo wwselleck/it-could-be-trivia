@@ -15,7 +15,7 @@ export async function handle(): Promise<Array<Action>> {
     types: [TriviaQuestions.QuestionType.SingleAnswer]
   });
   return [
-    UpdateActiveQuestion.create(question.id),
+    UpdateActiveQuestion.create(question),
     Reply.create(contentForQuestion(question))
   ];
 }

@@ -7,6 +7,7 @@ import { MetaActionKind } from "./MetaActionKind";
 import * as AskRandomQuestion from "./AskRandomQuestion";
 import * as AnswerQuestion from "./AnswerQuestion";
 import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
+import * as AnswerMultipleAnswerQuestion from "./AnswerMultipleAnswerQuestion";
 import * as CancelAndAnswer from "./CancelAndAnswer";
 import * as ShowLeaderboard from "./ShowLeaderboard";
 import * as ShowUserScore from "./ShowUserScore";
@@ -39,6 +40,9 @@ export async function processMetaAction(
       break;
     case MetaActionKind.AnswerSingleAnswerQuestion:
       actions = AnswerSingleAnswerQuestion.handle(action, config);
+      break;
+    case MetaActionKind.AnswerMultipleAnswerQuestion:
+      actions = AnswerMultipleAnswerQuestion.handle(action, config);
       break;
     case MetaActionKind.CancelAndAnswer:
       actions = CancelAndAnswer.handle(action, config);

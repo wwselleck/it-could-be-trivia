@@ -36,7 +36,6 @@ export const commandHandler = (
   command_prelude: string,
   commands: Array<DiscordMessageHandler.DiscordCommand>
 ) => (ctx: MessageContext): Array<Action> => {
-  logger.trace({ commands, ctx, command_prelude }, "commandHandler");
   let tokens = extractCommandTokens(command_prelude)(ctx);
 
   if (tokens === []) {

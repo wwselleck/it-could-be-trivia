@@ -3,6 +3,7 @@ import { Action } from "../action";
 import { MetaActionHandlerConfig } from "./meta_action";
 import { MetaActionKind } from "./MetaActionKind";
 import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
+import * as AnswerMultipleAnswerQuestion from "./AnswerMultipleAnswerQuestion";
 
 export type AnswerQuestionAction = {
   kind: MetaActionKind.AnswerQuestion;
@@ -22,6 +23,8 @@ export async function handle(
   switch (activeQuestion.question_type_id) {
     case TriviaQuestions.QuestionType.SingleAnswer:
       return [AnswerSingleAnswerQuestion.create(activeQuestion)];
+    case TriviaQuestions.QuestionType.MultipleAnswer:
+      return [AnswerMultipleAnswerQuestion.create(activeQuestion)];
   }
   return [];
 }

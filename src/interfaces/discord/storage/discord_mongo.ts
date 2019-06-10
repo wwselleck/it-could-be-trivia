@@ -1,3 +1,4 @@
+import * as TriviaQuestions from "@it-could-be/trivia-questions";
 import pino = require("pino");
 import mongoose = require("mongoose");
 import { DiscordStorage } from "./discord_storage";
@@ -38,9 +39,24 @@ const ServerSchema = new mongoose.Schema<ServerModel>({
   }
 });
 
+interface MultipleAnswerQuestionStatusModel extends mongoose.Document {}
+
+const MultipleAnswerQuestionStatusSchema = new mongoose.Schema<
+  MultipleAnswerQuestionStatusModel
+>({
+  serverId: { type: String },
+  channelId: { type: String },
+  questionId: { type: String },
+  answered: { type: Array, of: String }
+});
+
 function registerModels(conn: mongoose.Connection) {
   return {
-    Server: conn.model<ServerModel>("Server", ServerSchema)
+    Server: conn.model<ServerModel>("Server", ServerSchema),
+    MultipleAnswerQuestionStatus: conn.model<MultipleAnswerQuestionStatusModel>(
+      "MultipleAnswerQuestionStatus",
+      MultipleAnswerQuestionStatusSchema
+    )
   };
 }
 
@@ -91,13 +107,15 @@ export class DiscordMongoStorage implements DiscordStorage {
   async setActiveQuestion(
     serverId: string,
     channelId: string,
-    questionId: string | null
+    question: TriviaQuestions.Question | null
   ): Promise<void> {
-    if (!questionId) {
+    if (!question) {
       return this.cancelActiveQuestion(serverId, channelId);
     }
+
+    // Set the active question ID on the server.channel
     await runMongoQuery<void>(this.logger, this.models)({
-      name: `setActiveQuestion(${serverId},${channelId},${questionId})`,
+      name: `setActiveQuestion(${serverId},${channelId},${question.id})`,
       fn: async (models: Models) => {
         let query = models.Server.update(
           {
@@ -105,7 +123,7 @@ export class DiscordMongoStorage implements DiscordStorage {
           },
           {
             $set: {
-              [`channels.${channelId}.activeQuestion.id`]: questionId
+              [`channels.${channelId}.activeQuestion.id`]: question.id
             }
           },
           { upsert: true }
