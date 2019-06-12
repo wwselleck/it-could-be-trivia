@@ -83,7 +83,7 @@ export class DiscordMongoStorage implements DiscordStorage {
   }
 
   connect() {
-    let conn = mongoose.createConnection(this.uri);
+    let conn = mongoose.createConnection(this.uri, { useNewUrlParser: true });
     this.conn = conn;
     this.models = registerModels(this.conn);
   }

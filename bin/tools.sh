@@ -8,7 +8,7 @@ clean() {
 }
 
 build() {
-    tsc
+    "${NODE_MODULES_BIN}/tsc"
 }
 
 lint() {
@@ -16,6 +16,7 @@ lint() {
 }
 
 start() {
+    build
     "node" "dist/index.js"
 }
 

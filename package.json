@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "./bin/tools.sh build",
     "db:start": "./bin/tools.sh start-db",
     "db:stop": "./bin/tools.sh stop-db",
     "lint": "prettier \"src/**/*\"",
