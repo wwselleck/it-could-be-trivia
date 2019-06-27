@@ -19,8 +19,10 @@
   },
   "dependencies": {
     "@it-could-be/trivia-questions": "0.0.9",
+    "@types/dotenv": "^6.1.1",
     "@types/pino": "^5.8.5",
     "discord.js": "^11.4.2",
+    "dotenv": "^8.0.0",
     "express": "^4.16.4",
     "mongoose": "^5.4.19",
     "pino": "^5.11.1"

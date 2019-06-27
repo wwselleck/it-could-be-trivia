@@ -1,3 +1,4 @@
+import "./env";
 import pino = require("pino");
 import { logger } from "./lib/logger";
 import * as Config from "./lib/config";
