@@ -1,5 +1,5 @@
-import { Action, Reply } from "../../actions";
-import { MessageContext } from "../../../message_context";
+import { Action, Reply } from "src/actions";
+import { MessageContext } from "src/message_context";
 
 // Removing the return type annotation here causes TS compiler
 // errors. Maybe look into exactly why at some point?

@@ -8,6 +8,7 @@ clean() {
 }
 
 build() {
+    clean
     "${NODE_MODULES_BIN}/tsc"
 }
 
@@ -17,7 +18,7 @@ lint() {
 
 start() {
     build
-    "node" "dist/index.js"
+    cd dist && "node" "index.js"
 }
 
 start_db() {
@@ -34,7 +35,7 @@ watch_source() {
 }
 
 watch_server() {
-    "${NODE_MODULES_BIN}/nodemon" "dist/index.js"
+    "nodemon" "dist/index.js"
 }
 
 watch() {

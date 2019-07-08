@@ -15,8 +15,8 @@
  *
  */
 
-import * as DiscordClient from "../../../../lib/discord";
-import * as DiscordStorage from "../../storage/discord_storage";
+import * as DiscordClient from "src/lib/discord";
+import * as DiscordStorage from "src/interfaces/discord/storage/discord_storage";
 import { Action } from "../action";
 import { EffectActionKind } from "./EffectActionKind";
 import * as UpdateActiveQuestion from "./UpdateActiveQuestion";

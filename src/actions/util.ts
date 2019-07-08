@@ -1,5 +1,5 @@
 import TriviaQuestions = require("@it-could-be/trivia-questions");
-import { User } from "../storage/models";
+import { User } from "src/interfaces/discord/storage/models";
 
 export function mentionForUserId(userId: string) {
   return `<@${userId}>`;

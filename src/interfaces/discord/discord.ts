@@ -1,42 +1,37 @@
 import logger = require("pino");
-import * as Discord from "../../lib/discord";
+import * as Discord from "src/lib/discord";
+import * as MessageHandler from "src/message_handler";
+import * as Actions from "src/actions";
+import * as DiscordMessageContext from "./message_context";
+import { DiscordActionHandler } from "./discord_action_handler";
 import { DiscordStorage } from "./storage/discord_storage";
-import * as DiscordMessageHandler from "./discord_message_handler";
-import * as DiscordActions from "./actions";
-import * as DiscordMessageContext from "./discord_message_context";
 
-import { triviaHandler } from "./handlers/commands/trivia";
-import { cancelActiveQuestionHandler } from "./handlers/commands/cancel";
-import { activeQuestionHandler } from "./handlers/commands/active";
-import { leaderboardHandler } from "./handlers/commands/leaderboard";
-import { scoreHandler } from "./handlers/commands/score";
-
-let defaultMessageHandler = DiscordMessageHandler.create({
+let defaultMessageHandler = MessageHandler.create({
   commandPrelude: "!",
   commands: [
     {
       name: ["trivia", "t"],
-      handler: triviaHandler,
+      handler: MessageHandler.triviaHandler,
       subcommands: [
         {
           name: ["cancel", "c"],
-          handler: cancelActiveQuestionHandler(false)
+          handler: MessageHandler.cancelActiveQuestionHandler(false)
         },
         {
           name: ["answer", "a"],
-          handler: cancelActiveQuestionHandler(true)
+          handler: MessageHandler.cancelActiveQuestionHandler(true)
         },
         {
           name: ["active", "aq"],
-          handler: activeQuestionHandler
+          handler: MessageHandler.activeQuestionHandler
         },
         {
           name: ["leaderboard", "lb"],
-          handler: leaderboardHandler
+          handler: MessageHandler.leaderboardHandler
         },
         {
           name: ["score", "s"],
-          handler: scoreHandler
+          handler: MessageHandler.scoreHandler
         }
       ]
     }
@@ -52,12 +47,12 @@ export interface DiscordInterfaceConfig {
 export class DiscordInterface {
   private config: DiscordInterfaceConfig;
   private client: Discord.DiscordClient;
-  private actionHandler: DiscordActions.DiscordActionHandler;
+  private actionHandler: DiscordActionHandler;
 
   constructor(config: DiscordInterfaceConfig) {
     this.config = config;
     this.client = new Discord.DiscordClient(this.config.token);
-    this.actionHandler = new DiscordActions.DiscordActionHandler(
+    this.actionHandler = new DiscordActionHandler(
       this.client,
       config.storage,
       this.config.logger
@@ -71,7 +66,7 @@ export class DiscordInterface {
   }
 
   private createMessageHandler() {
-    let handler = DiscordMessageHandler.withLog(this.config.logger)(
+    let handler = MessageHandler.withLog(this.config.logger)(
       defaultMessageHandler
     );
     return async (message: Discord.Message) => {

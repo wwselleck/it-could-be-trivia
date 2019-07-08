@@ -1,17 +1,17 @@
 import logger = require("pino");
-import * as DiscordActions from "./actions/action";
-import { MessageContext } from "../message_context";
-import { commandHandler } from "./discord_command_handler";
+import * as DiscordActions from "src/actions";
+import { MessageContext } from "src/message_context";
+import { commandHandler } from "./command_handler";
 import { answerHandler } from "./handlers/answer";
 
 export type MessageHandler = (
   ctx: MessageContext
 ) => Array<DiscordActions.Action>;
 
-export interface DiscordCommand {
+export interface Command {
   name: Array<string>;
   handler: MessageHandler;
-  subcommands?: Array<DiscordCommand>;
+  subcommands?: Array<Command>;
   allowedList?: Array<string>;
 }
 
@@ -21,7 +21,7 @@ export interface DiscordCommand {
 // Stop typing.
 interface DiscordMessageHandlerConfig {
   commandPrelude: string;
-  commands?: Array<DiscordCommand>;
+  commands?: Array<Command>;
 }
 
 export const create = (config: DiscordMessageHandlerConfig) => (

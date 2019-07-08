@@ -1,7 +1,7 @@
-import { logger } from "../../lib/logger";
-import { Action } from "./actions";
-import * as DiscordMessageHandler from "./discord_message_handler";
-import { MessageContext } from "../message_context";
+import { logger } from "src/lib/logger";
+import { Action } from "src/actions";
+import * as MessageHandler from "./message_handler";
+import { MessageContext } from "src/message_context";
 
 /**
  * Take a content string and return the command tokens
@@ -34,7 +34,7 @@ const extractCommandTokens = (prelude: string) => (
 
 export const commandHandler = (
   command_prelude: string,
-  commands: Array<DiscordMessageHandler.DiscordCommand>
+  commands: Array<MessageHandler.Command>
 ) => (ctx: MessageContext): Array<Action> => {
   logger.trace({ commands, ctx, command_prelude }, "commandHandler");
   let tokens = extractCommandTokens(command_prelude)(ctx);

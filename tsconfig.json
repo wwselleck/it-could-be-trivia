@@ -1,12 +1,14 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "lib": ["es7", "es2017.object", "esnext"],
-        "moduleResolution": "node",
-        "target": "es6",
-        "strict": true,
-        "target": "es6",
-        "outDir": "dist",
-        "sourceMap": true
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["es7", "es2017.object", "esnext"],
+    "moduleResolution": "node",
+    "strict": true,
+    "target": "es6",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
     }
+  }
 }

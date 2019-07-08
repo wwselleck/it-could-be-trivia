@@ -1,5 +1,5 @@
-import { Reply, AskRandomQuestion } from "../../actions";
-import { MessageContext } from "../../../message_context";
+import { Reply, AskRandomQuestion } from "src/actions";
+import { MessageContext } from "src/message_context";
 
 export const withQuestionLimit = (fn: any) => (ctx: MessageContext) => {
   if (ctx.activeQuestion && ctx.activeQuestion.id) {

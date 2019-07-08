@@ -1,9 +1,9 @@
 import * as TriviaQuestions from "@it-could-be/trivia-questions";
-import * as DiscordClient from "../../lib/discord";
+import * as DiscordClient from "src/lib/discord";
+import { None } from "src/lib/types";
+import { logger } from "src/lib/logger";
+import { MessageContext } from "src/message_context";
 import * as DiscordStorage from "./storage/discord_storage";
-import { None } from "../../lib/types";
-import { logger } from "../../lib/logger";
-import { MessageContext } from "../message_context";
 const questions = require("@it-could-be/trivia-questions/dist/questions.json");
 
 type BuildMessageContextConfig = {

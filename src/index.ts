@@ -1,3 +1,4 @@
+import "./register_paths";
 import "./env";
 import pino = require("pino");
 import { logger } from "./lib/logger";

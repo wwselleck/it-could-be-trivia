@@ -1,7 +1,7 @@
-import { logger } from "../../../../lib/logger";
-import { MessageContext } from "../../../message_context";
-import { DiscordStorage } from "../../storage/discord_storage";
-import * as DiscordClient from "../../../../lib/discord";
+import { logger } from "src/lib/logger";
+import { MessageContext } from "src/message_context";
+import { DiscordStorage } from "src/interfaces/discord/storage/discord_storage";
+import * as DiscordClient from "src/lib/discord";
 import { Action } from "../action";
 import { MetaActionKind } from "./MetaActionKind";
 import * as AskRandomQuestion from "./AskRandomQuestion";
@@ -10,6 +10,14 @@ import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
 import * as CancelAndAnswer from "./CancelAndAnswer";
 import * as ShowLeaderboard from "./ShowLeaderboard";
 import * as ShowUserScore from "./ShowUserScore";
+
+export type MetaAction =
+  | AskRandomQuestion.AskRandomQuestionAction
+  | AnswerQuestion.AnswerQuestionAction
+  | AnswerSingleAnswerQuestion.AnswerSingleAnswerQuestionAction
+  | CancelAndAnswer.CancelAndAnswerAction
+  | ShowLeaderboard.ShowLeaderboardAction
+  | ShowUserScore.ShowUserScoreAction;
 
 export type MetaActionHandlerConfig = {
   ctx: MessageContext;
@@ -58,11 +66,3 @@ export async function processMetaAction(
   logger.trace({ action, resultingActions }, "processMetaAction Complete");
   return resultingActions;
 }
-
-export type MetaAction =
-  | AskRandomQuestion.AskRandomQuestionAction
-  | AnswerQuestion.AnswerQuestionAction
-  | AnswerSingleAnswerQuestion.AnswerSingleAnswerQuestionAction
-  | CancelAndAnswer.CancelAndAnswerAction
-  | ShowLeaderboard.ShowLeaderboardAction
-  | ShowUserScore.ShowUserScoreAction;

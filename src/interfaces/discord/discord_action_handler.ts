@@ -1,10 +1,8 @@
 import logger = require("pino");
-import * as DiscordClient from "../../../lib/discord";
-import * as DiscordStorage from "../storage/discord_storage";
-import { MessageContext } from "../../message_context";
-import { Action } from "./action";
-import { processMetaAction } from "./meta";
-import { processEffectAction } from "./effect";
+import * as DiscordClient from "src/lib/discord";
+import * as DiscordStorage from "./storage/discord_storage";
+import { MessageContext } from "src/message_context";
+import { Action, processMetaAction, processEffectAction } from "src/actions";
 
 export class DiscordActionHandler {
   private client: DiscordClient.DiscordClient;
