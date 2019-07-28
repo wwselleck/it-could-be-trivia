@@ -1,6 +1,13 @@
-import { ShowUserScore } from "src/actions";
+import { Action, MetaActionKind } from "src/actions";
 import { MessageContext } from "src/message_context";
 
-export const scoreHandler = (ctx: MessageContext) => {
-  return [ShowUserScore.create(ctx.message.sender.id)];
+export const scoreHandler = (ctx: MessageContext): Array<Action> => {
+  return [
+    {
+      kind: MetaActionKind.ShowUserScore,
+      payload: {
+        userId: ctx.message.sender.id
+      }
+    }
+  ];
 };

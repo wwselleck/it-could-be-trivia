@@ -1,12 +1,10 @@
 import logger = require("pino");
-import * as DiscordActions from "src/actions";
+import { Action } from "src/actions";
 import { MessageContext } from "src/message_context";
 import { commandHandler } from "./command_handler";
 import { answerHandler } from "./handlers/answer";
 
-export type MessageHandler = (
-  ctx: MessageContext
-) => Array<DiscordActions.Action>;
+export type MessageHandler = (ctx: MessageContext) => Array<Action>;
 
 export interface Command {
   name: Array<string>;
@@ -33,12 +31,9 @@ export const create = (config: DiscordMessageHandlerConfig) => (
     ...(commands ? [commandHandler(commandPrelude, commands)] : []),
     answerHandler()
   ];
-  return handlers.reduce(
-    (acc: Array<DiscordActions.Action>, curr: MessageHandler) => {
-      return [...acc, ...curr(context)];
-    },
-    []
-  );
+  return handlers.reduce((acc: Array<Action>, curr: MessageHandler) => {
+    return [...acc, ...curr(context)];
+  }, []);
 };
 
 export const withLog = (logger: logger.Logger) => (fn: MessageHandler) => (

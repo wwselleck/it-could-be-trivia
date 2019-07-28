@@ -1,68 +1,43 @@
-import { logger } from "src/lib/logger";
-import { MessageContext } from "src/message_context";
-import { DiscordStorage } from "src/interfaces/discord/storage/discord_storage";
-import * as DiscordClient from "src/lib/discord";
-import { Action } from "../action";
+import * as TriviaQuestions from "@it-could-be/trivia-questions";
 import { MetaActionKind } from "./MetaActionKind";
-import * as AskRandomQuestion from "./AskRandomQuestion";
-import * as AnswerQuestion from "./AnswerQuestion";
-import * as AnswerSingleAnswerQuestion from "./AnswerSingleAnswerQuestion";
-import * as CancelAndAnswer from "./CancelAndAnswer";
-import * as ShowLeaderboard from "./ShowLeaderboard";
-import * as ShowUserScore from "./ShowUserScore";
 
-export type MetaAction =
-  | AskRandomQuestion.AskRandomQuestionAction
-  | AnswerQuestion.AnswerQuestionAction
-  | AnswerSingleAnswerQuestion.AnswerSingleAnswerQuestionAction
-  | CancelAndAnswer.CancelAndAnswerAction
-  | ShowLeaderboard.ShowLeaderboardAction
-  | ShowUserScore.ShowUserScoreAction;
-
-export type MetaActionHandlerConfig = {
-  ctx: MessageContext;
-  storage: DiscordStorage;
-  message: DiscordClient.Message;
+export type AnswerQuestion = {
+  kind: MetaActionKind.AnswerQuestion;
+  payload: {
+    question: TriviaQuestions.Question;
+  };
 };
 
-export type MetaActionHandler = (
-  action: MetaAction,
-  config: MetaActionHandlerConfig
-) => Array<Action>;
+export type AnswerSingleAnswerQuestion = {
+  kind: MetaActionKind.AnswerSingleAnswerQuestion;
+  payload: {
+    question: TriviaQuestions.SingleAnswerQuestion;
+  };
+};
 
-export async function processMetaAction(
-  action: Action,
-  config: MetaActionHandlerConfig
-): Promise<Array<Action>> {
-  let actions: Promise<Array<Action>>;
+export type AskRandomQuestion = {
+  kind: MetaActionKind.AskRandomQuestion;
+};
 
-  // Maybe clean this up at some point so all meta actions don't
-  // have to be manually added here
-  switch (action.kind) {
-    case MetaActionKind.AskRandomQuestion:
-      actions = AskRandomQuestion.handle();
-      break;
-    case MetaActionKind.AnswerQuestion:
-      actions = AnswerQuestion.handle(action, config);
-      break;
-    case MetaActionKind.AnswerSingleAnswerQuestion:
-      actions = AnswerSingleAnswerQuestion.handle(action, config);
-      break;
-    case MetaActionKind.CancelAndAnswer:
-      actions = CancelAndAnswer.handle(action, config);
-      break;
-    case MetaActionKind.ShowLeaderboard:
-      actions = ShowLeaderboard.handle(action, config);
-      break;
-    case MetaActionKind.ShowUserScore:
-      actions = ShowUserScore.handle(action, config);
-      break;
-    default:
-      return [action];
-  }
-  let resultingActions = (await Promise.all(
-    (await actions).map(action => processMetaAction(action, config))
-  )).flat();
-  logger.trace({ action, resultingActions }, "processMetaAction Complete");
-  return resultingActions;
-}
+export type CancelAndAnswer = {
+  kind: MetaActionKind.CancelAndAnswer;
+};
+
+export type ShowLeaderboard = {
+  kind: MetaActionKind.ShowLeaderboard;
+};
+
+export type ShowUserScore = {
+  kind: MetaActionKind.ShowUserScore;
+  payload: {
+    userId: string;
+  };
+};
+
+export type MetaAction =
+  | AskRandomQuestion
+  | AnswerQuestion
+  | AnswerSingleAnswerQuestion
+  | CancelAndAnswer
+  | ShowLeaderboard
+  | ShowUserScore;

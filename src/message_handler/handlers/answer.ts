@@ -1,11 +1,16 @@
 import { MessageContext } from "src/message_context";
-import * as Action from "src/actions";
+import { Action, MetaActionKind } from "src/actions";
 
-export const answerHandler = () => (
-  ctx: MessageContext
-): Array<Action.Action> => {
+export const answerHandler = () => (ctx: MessageContext): Array<Action> => {
   if (!ctx.activeQuestion) {
     return [];
   }
-  return [Action.AnswerQuestion.create(ctx.activeQuestion)];
+  return [
+    {
+      kind: MetaActionKind.AnswerQuestion,
+      payload: {
+        question: ctx.activeQuestion
+      }
+    }
+  ];
 };

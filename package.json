@@ -7,6 +7,7 @@
     "build": "./bin/tools.sh build",
     "db:start": "./bin/tools.sh start-db",
     "db:stop": "./bin/tools.sh stop-db",
+    "dev": "yarn db:start && yarn watch",
     "lint": "prettier \"src/**/*\"",
     "start": "./bin/tools.sh start",
     "watch": "./bin/tools.sh watch",

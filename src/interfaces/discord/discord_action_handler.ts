@@ -1,8 +1,16 @@
 import logger = require("pino");
 import * as DiscordClient from "src/lib/discord";
-import * as DiscordStorage from "./storage/discord_storage";
 import { MessageContext } from "src/message_context";
-import { Action, processMetaAction, processEffectAction } from "src/actions";
+import * as DiscordStorage from "./storage/discord_storage";
+import { Action } from "src/actions";
+import { processMetaAction, processEffectAction } from "./action_handlers";
+
+export type ActionHandlerInfo = {
+  ctx: MessageContext;
+  message: DiscordClient.Message;
+  client: DiscordClient.DiscordClient;
+  storage: DiscordStorage.DiscordStorage;
+};
 
 export class DiscordActionHandler {
   private client: DiscordClient.DiscordClient;
@@ -24,9 +32,15 @@ export class DiscordActionHandler {
     message: DiscordClient.Message,
     actions: Array<Action>
   ) {
-    let config = { ctx, storage: this.storage, message };
+    let actionHandlerInfo = {
+      ctx,
+      message,
+      client: this.client,
+      storage: this.storage
+    };
+
     let flattenedActions = (await Promise.all(
-      actions.map(action => processMetaAction(action, config))
+      actions.map(action => processMetaAction(action, actionHandlerInfo))
     )).flat();
     this.logger.debug(
       {
@@ -37,12 +51,7 @@ export class DiscordActionHandler {
       "Actions for Message"
     );
 
-    let handlerConfig = {
-      message,
-      client: this.client,
-      storage: this.storage
-    };
-    let effectHandler = await processEffectAction(handlerConfig);
+    let effectHandler = await processEffectAction(actionHandlerInfo);
     flattenedActions.map(effectHandler);
   }
 }
