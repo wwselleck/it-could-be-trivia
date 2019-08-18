@@ -5,6 +5,7 @@ export interface User {
 }
 
 export interface Channel {
+  serverId: string;
   channelId: string;
   activeQuestion: {
     id: string;
@@ -13,6 +14,5 @@ export interface Channel {
 
 export interface Server {
   serverId: string;
-  channels: Map<string, Channel>;
   users: Map<string, User>;
 }

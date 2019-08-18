@@ -5,7 +5,6 @@ export const handle = ({ message, storage }: ActionHandlerInfo) => async (
   action: UpdateActiveQuestion
 ) => {
   await storage.setActiveQuestion(
-    message.guild.id,
     message.channel.id,
     action.payload.questionId
   );

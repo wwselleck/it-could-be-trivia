@@ -1,7 +1,6 @@
 import logger = require("pino");
 import * as Discord from "src/lib/discord";
 import * as MessageHandler from "src/message_handler";
-import * as Actions from "src/actions";
 import * as DiscordMessageContext from "./message_context";
 import { DiscordActionHandler } from "./discord_action_handler";
 import { DiscordStorage } from "./storage/discord_storage";

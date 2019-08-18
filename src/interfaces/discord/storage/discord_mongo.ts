@@ -22,16 +22,18 @@ const ChannelSchema = new mongoose.Schema<ChannelModel>({
       }
     }
   }
+  //preferences: {
+  //type: {
+  //questionInterval: Number
+  //}
+  //},
+  //lastAutomatedQuestionSent: Date
 });
 
 interface ServerModel extends Server, mongoose.Document {}
 
 const ServerSchema = new mongoose.Schema<ServerModel>({
   serverId: { type: String },
-  channels: {
-    type: Map,
-    of: ChannelSchema
-  },
   users: {
     type: Map,
     of: UserSchema
@@ -40,7 +42,8 @@ const ServerSchema = new mongoose.Schema<ServerModel>({
 
 function registerModels(conn: mongoose.Connection) {
   return {
-    Server: conn.model<ServerModel>("Server", ServerSchema)
+    Server: conn.model<ServerModel>("Server", ServerSchema),
+    Channel: conn.model<ChannelModel>("Channel", ChannelSchema)
   };
 }
 
@@ -67,6 +70,7 @@ function runMongoQuery<T>(logger: pino.Logger, models?: Models) {
 
 type Models = {
   Server: mongoose.Model<ServerModel>;
+  Channel: mongoose.Model<ChannelModel>;
 };
 
 export class DiscordMongoStorage implements DiscordStorage {
@@ -75,6 +79,7 @@ export class DiscordMongoStorage implements DiscordStorage {
   private conn?: mongoose.Connection;
   private models?: {
     Server: mongoose.Model<ServerModel>;
+    Channel: mongoose.Model<ChannelModel>;
   };
 
   constructor(uri: string, logger: pino.Logger) {
@@ -89,23 +94,22 @@ export class DiscordMongoStorage implements DiscordStorage {
   }
 
   async setActiveQuestion(
-    serverId: string,
     channelId: string,
     questionId: string | null
   ): Promise<void> {
     if (!questionId) {
-      return this.cancelActiveQuestion(serverId, channelId);
+      return this.cancelActiveQuestion(channelId);
     }
     await runMongoQuery<void>(this.logger, this.models)({
-      name: `setActiveQuestion(${serverId},${channelId},${questionId})`,
+      name: `setActiveQuestion(${channelId},${questionId})`,
       fn: async (models: Models) => {
-        let query = models.Server.update(
+        let query = models.Channel.update(
           {
-            serverId
+            channelId
           },
           {
             $set: {
-              [`channels.${channelId}.activeQuestion.id`]: questionId
+              [`activeQuestion.id`]: questionId
             }
           },
           { upsert: true }
@@ -116,20 +120,17 @@ export class DiscordMongoStorage implements DiscordStorage {
     return;
   }
 
-  async cancelActiveQuestion(
-    serverId: string,
-    channelId: string
-  ): Promise<any> {
+  async cancelActiveQuestion(channelId: string): Promise<any> {
     await runMongoQuery<any>(this.logger, this.models)({
-      name: `cancelActiveQuestion(${serverId},${channelId})`,
+      name: `cancelActiveQuestion(${channelId})`,
       fn: (models: Models) => {
-        let query = models.Server.update(
+        let query = models.Channel.update(
           {
-            serverId
+            channelId
           },
           {
             $unset: {
-              [`channels.${channelId}.activeQuestion`]: 1
+              [`activeQuestion`]: 1
             }
           }
         );
@@ -139,39 +140,29 @@ export class DiscordMongoStorage implements DiscordStorage {
     return;
   }
 
-  async getActiveQuestion(
-    serverId: string,
-    channelId: string
-  ): Promise<Maybe<string>> {
-    let server = await runMongoQuery<ServerModel | null>(
+  async getActiveQuestion(channelId: string): Promise<Maybe<string>> {
+    let channel = await runMongoQuery<ChannelModel | null>(
       this.logger,
       this.models
     )({
-      name: `getActiveQuestion(${serverId},${channelId})`,
+      name: `getActiveQuestion(${channelId})`,
       fn: async (models: Models) => {
-        let query = models.Server.findOne(
+        let query = models.Channel.findOne(
           {
-            serverId,
-            [`channels.${channelId}.activeQuestion`]: { $exists: true }
+            channelId
           },
           {
-            serverId: 1,
-            [`channels.${channelId}.activeQuestion`]: 1
+            activeQuestion: 1
           }
         );
         return query.exec();
       }
     });
 
-    if (!server) {
+    if (!channel || !channel.activeQuestion) {
       return None;
     }
-
-    let channel = server.channels!.get(channelId);
-    if (!channel!.activeQuestion) {
-      return None;
-    }
-    return channel!.activeQuestion.id;
+    return channel.activeQuestion.id;
   }
 
   async getUserScore(
@@ -250,4 +241,6 @@ export class DiscordMongoStorage implements DiscordStorage {
     let sortedUsers = users.sort((u1: User, u2: User) => u2.score - u1.score);
     return sortedUsers;
   }
+
+  async getChannelsDueForAutomatedQuestion(): Promise<Array<User>> {}
 }

@@ -19,7 +19,7 @@ export async function buildMessageContext({
   let server = message.guild;
   let channel = message.channel;
 
-  let activeQuestionId = await storage.getActiveQuestion(server.id, channel.id);
+  let activeQuestionId = await storage.getActiveQuestion(channel.id);
   let activeQuestion = {
     activeQuestion:
       activeQuestionId === None
